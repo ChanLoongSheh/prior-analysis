@@ -54,7 +54,7 @@ A key task here is to decide how many components (`k`) to retain. We will do thi
 The transformation is as follows:
 $` C = X_{centered} \cdot W `$
 Where:
-*   `$C$` is the matrix of principal component coefficients (or scores).
+*   `$`C`$` is the matrix of principal component coefficients (or scores).
 *   `$X_{centered}$` is the (888, 21) centered data matrix.
 *   `$W$` is the matrix of principal components (eigenvectors), with shape (21, `$k$`).
 
