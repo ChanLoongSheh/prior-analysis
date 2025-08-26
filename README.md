@@ -89,8 +89,10 @@ $` X_{new} = \mu + C_{new} \cdot W^T `$
 Where:
 *   $`X_{new}`$ is the new perturbed profile.
 *   $`μ`$ is the mean profile.
-*   $`C_{new}`$ is the vector of new coefficients. For a perturbation along the `i`-th component, $`C_{new}`$ would be $`C_rep + [0, ..., Δc_i, ..., 0]`$.
+*   $`C_{new}`$ is the vector of new coefficients. For a perturbation along the `i`-th component, $`C_{new}`$ would be $`C_{rep} + [0, ..., Δc_i, ..., 0]`$.
 *   $`W^T`$ is the transpose of the principal components matrix.
+
+---
 
 ### **Conclusion and Next Steps**
 
