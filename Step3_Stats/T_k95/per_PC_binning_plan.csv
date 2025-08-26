@@ -1,0 +1,2 @@
+PC,n,data_min,data_max,IQR,std,FD_width,FD_bins,Scott_width,Scott_bins,Sturges_bins,recommended_rule,recommended_bins,recommended_width
+PC1,888,-37.00389617141747,69.83818017342443,38.93898350294999,22.465016977902735,8.102336646699463,14,8.180323403954429,14,11,FD,14,7.631576881774421

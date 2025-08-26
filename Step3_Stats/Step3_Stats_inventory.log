@@ -1,0 +1,86 @@
+Ground-based Atmospheric Profiles — Step 3: Statistical Analysis of PCA Coefficients
+Timestamp: 2025-08-26 21:23:40
+
+Inputs (from Step 2):
+  Step 2 directory: Step2_PCA
+  - PCA_T_scores_k95.csv / PCA_T_scores_k99.csv: Truncated temperature scores C = X_centered · W (rows: samples, columns: PCs).
+  - PCA_Td_scores_k95.csv / PCA_Td_scores_k99.csv: Truncated dew-point scores C = X_centered · W (rows: samples, columns: PCs).
+  - PCA_T_explained_variance_ratio.csv / PCA_Td_explained_variance_ratio.csv: Full explained variance ratios per PC (sklearn definition).
+
+Core quantities:
+  - C (scores): Principal component coefficients matrix for the retained PCs.
+  - Δc_i (delta_c): Recommended coefficient differential for PC i, chosen as the histogram bin width from the selected rule.
+
+Outputs (this step):
+  Dataset: T_k95
+    Summary CSVs:
+      - Step3_Stats\T_k95\per_PC_stats.csv
+        Meaning: Per-PC descriptive statistics (mean, std, skewness, kurtosis, percentiles, normality test).
+      - Step3_Stats\T_k95\per_PC_binning_plan.csv
+        Meaning: Per-PC histogram binning plan (FD/Scott/Sturges), recommended rule, bins, and bin width.
+      - Step3_Stats\T_k95\delta_c_recommended.csv
+        Meaning: Recommended Δc_i per PC (equal to recommended histogram bin width).
+      - Step3_Stats\T_k95\explained_variance_ratio_k.csv
+        Meaning: Explained variance ratios for the retained PCs (truncated to k).
+    Histograms and per-PC plots:
+      - CSV histograms (bin_left, bin_right, bin_center, count, density) for each PC: saved under Step3_Stats\T_k95\histograms
+      - PNG plots (per PC) with histogram (density), KDE (SciPy), and Gaussian fit: saved under Step3_Stats\T_k95\plots
+    Grid figure (all PCs):
+      - Step3_Stats\T_k95\plots\all_PCs_pdf_grid.png
+        Meaning: Multi-panel PDF visualization across all retained PCs.
+
+  Dataset: T_k99
+    Summary CSVs:
+      - Step3_Stats\T_k99\per_PC_stats.csv
+        Meaning: Per-PC descriptive statistics (mean, std, skewness, kurtosis, percentiles, normality test).
+      - Step3_Stats\T_k99\per_PC_binning_plan.csv
+        Meaning: Per-PC histogram binning plan (FD/Scott/Sturges), recommended rule, bins, and bin width.
+      - Step3_Stats\T_k99\delta_c_recommended.csv
+        Meaning: Recommended Δc_i per PC (equal to recommended histogram bin width).
+      - Step3_Stats\T_k99\explained_variance_ratio_k.csv
+        Meaning: Explained variance ratios for the retained PCs (truncated to k).
+    Histograms and per-PC plots:
+      - CSV histograms (bin_left, bin_right, bin_center, count, density) for each PC: saved under Step3_Stats\T_k99\histograms
+      - PNG plots (per PC) with histogram (density), KDE (SciPy), and Gaussian fit: saved under Step3_Stats\T_k99\plots
+    Grid figure (all PCs):
+      - Step3_Stats\T_k99\plots\all_PCs_pdf_grid.png
+        Meaning: Multi-panel PDF visualization across all retained PCs.
+
+  Dataset: Td_k95
+    Summary CSVs:
+      - Step3_Stats\Td_k95\per_PC_stats.csv
+        Meaning: Per-PC descriptive statistics (mean, std, skewness, kurtosis, percentiles, normality test).
+      - Step3_Stats\Td_k95\per_PC_binning_plan.csv
+        Meaning: Per-PC histogram binning plan (FD/Scott/Sturges), recommended rule, bins, and bin width.
+      - Step3_Stats\Td_k95\delta_c_recommended.csv
+        Meaning: Recommended Δc_i per PC (equal to recommended histogram bin width).
+      - Step3_Stats\Td_k95\explained_variance_ratio_k.csv
+        Meaning: Explained variance ratios for the retained PCs (truncated to k).
+    Histograms and per-PC plots:
+      - CSV histograms (bin_left, bin_right, bin_center, count, density) for each PC: saved under Step3_Stats\Td_k95\histograms
+      - PNG plots (per PC) with histogram (density), KDE (SciPy), and Gaussian fit: saved under Step3_Stats\Td_k95\plots
+    Grid figure (all PCs):
+      - Step3_Stats\Td_k95\plots\all_PCs_pdf_grid.png
+        Meaning: Multi-panel PDF visualization across all retained PCs.
+
+  Dataset: Td_k99
+    Summary CSVs:
+      - Step3_Stats\Td_k99\per_PC_stats.csv
+        Meaning: Per-PC descriptive statistics (mean, std, skewness, kurtosis, percentiles, normality test).
+      - Step3_Stats\Td_k99\per_PC_binning_plan.csv
+        Meaning: Per-PC histogram binning plan (FD/Scott/Sturges), recommended rule, bins, and bin width.
+      - Step3_Stats\Td_k99\delta_c_recommended.csv
+        Meaning: Recommended Δc_i per PC (equal to recommended histogram bin width).
+      - Step3_Stats\Td_k99\explained_variance_ratio_k.csv
+        Meaning: Explained variance ratios for the retained PCs (truncated to k).
+    Histograms and per-PC plots:
+      - CSV histograms (bin_left, bin_right, bin_center, count, density) for each PC: saved under Step3_Stats\Td_k99\histograms
+      - PNG plots (per PC) with histogram (density), KDE (SciPy), and Gaussian fit: saved under Step3_Stats\Td_k99\plots
+    Grid figure (all PCs):
+      - Step3_Stats\Td_k99\plots\all_PCs_pdf_grid.png
+        Meaning: Multi-panel PDF visualization across all retained PCs.
+
+Notes:
+  - No detector system effects, thermal emission, or noise considerations are included in this stage.
+  - Row indices from Step 2 scores are preserved where applicable.
+  - Δc_i is intended for Step 5 profile perturbation magnitudes along each PC.
