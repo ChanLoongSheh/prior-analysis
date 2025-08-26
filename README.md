@@ -52,11 +52,11 @@ It is crucial to "center" the data by subtracting the mean profile from each ind
 A key task here is to decide how many components (`k`) to retain. We will do this by examining the "explained variance ratio." We will plot the cumulative explained variance and select the number of components that captures a high percentage (e.g., 95% or 99%) of the total variance in the original profiles. This ensures our reduced model is a faithful representation of the original data.
 
 The transformation is as follows:
-$$ C = X_{centered} \cdot W $$
+$ C = X_{centered} \cdot W $
 Where:
-*   `C` is the matrix of principal component coefficients (or scores).
-*   `X_centered` is the (888, 21) centered data matrix.
-*   `W` is the matrix of principal components (eigenvectors), with shape (21, `k`).
+*   `$C$` is the matrix of principal component coefficients (or scores).
+*   `$X_{centered}$` is the (888, 21) centered data matrix.
+*   `$W$` is the matrix of principal components (eigenvectors), with shape (21, `$k$`).
 
 ---
 
@@ -80,9 +80,9 @@ We also need to choose a bin size for the histograms. A good starting point is t
 
 ### **Step 5: Generate Perturbed Profiles**
 
-**Objective:** Create new, physically realistic profiles by perturbing the representative profile using the principal components and a defined coefficient differential (`Δc`).
+**Objective:** Create new, physically realistic profiles by perturbing the representative profile using the principal components and a defined coefficient differential (`$Δc$`).
 
-**Description:** This is the final step that synthesizes all previous work. We will take the representative profile and add a small perturbation based on one of the principal components. This perturbation is calculated by taking a principal component vector and scaling it by a "differential element" (`Δc_i`), which we determined from the statistical analysis in Step 3 (e.g., one bin width of the histogram).
+**Description:** This is the final step that synthesizes all previous work. We will take the representative profile and add a small perturbation based on one of the principal components. This perturbation is calculated by taking a principal component vector and scaling it by a "differential element" (`$Δc_i$`), which we determined from the statistical analysis in Step 3 (e.g., one bin width of the histogram).
 
 The reconstruction formula is the inverse of the PCA transformation:
 $$ X_{new} = \mu + C_{new} \cdot W^T $$
