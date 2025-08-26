@@ -1,0 +1,112 @@
+Ground-based Atmospheric Profiles — Step 5: Generate Perturbed Profiles
+Timestamp: 2025-08-26 22:22:52
+
+Inputs used (from prior steps):
+  - Step 1: μ_T, μ_Td, H (first 21 levels) from: ./Step1_Processed
+  - Step 2: W (PC loadings) from: ./Step2_PCA
+  - Step 3: Δc_i (recommended bin-width coefficients) from: ./Step3_Stats
+  - Step 4: Representative profiles from: ./Step4_RepresentativeProfile
+
+Core relation and interpretation:
+  - X_perturbed = X_rep + Δc_i · w_i (for each PC i)
+    where w_i is the i-th PC loading (column of W), Δc_i is from Step 3.
+  - Temperature (T) and dew-point (Td) are perturbed separately.
+  - Dew-point clipping enabled: ENFORCE_TD_LE_T = True (Td ≤ T applied level-wise).
+
+Representative profiles (length 21 over 0–2 km):
+  - Representative_T_profile_2km.csv (columns: H, T_atm) [from Step 4]
+  - Representative_Td_profile_2km.csv (columns: H, T_DP) [from Step 4]
+
+Outputs generated in this step (by dataset):
+  Dataset: T_k95
+    - Step5_Perturbation\T_k95\Representative_T_profile_2km.csv
+        Meaning: Representative profile used as baseline (columns: H, var_rep).
+    - Step5_Perturbation\T_k95\W_modes.csv
+        Meaning: PC loadings W re-indexed by height (rows=H, columns=PC1..PCk).
+    - Step5_Perturbation\T_k95\delta_c_used.csv
+        Meaning: Δc_i values per PC actually used in perturbations.
+    - Step5_Perturbation\T_k95\Perturbed_profiles_plus.csv
+        Meaning: Perturbed profiles with +Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\T_k95\Perturbed_profiles_minus.csv
+        Meaning: Perturbed profiles with −Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\T_k95\Delta_profiles_plus_theoretical.csv
+        Meaning: Theoretical deltas (+Δc_i·w_i) added to the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k95\Delta_profiles_minus_theoretical.csv
+        Meaning: Theoretical deltas (−Δc_i·w_i) subtracted from the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k95\Delta_profiles_plus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k95\Delta_profiles_minus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k95\per_PC\PCi_perturbation.csv (one file per PC)
+        Meaning: Detailed per-PC CSV with H, rep, plus, minus, Δc, w_i, and delta (theoretical/effective).
+
+  Dataset: T_k99
+    - Step5_Perturbation\T_k99\Representative_T_profile_2km.csv
+        Meaning: Representative profile used as baseline (columns: H, var_rep).
+    - Step5_Perturbation\T_k99\W_modes.csv
+        Meaning: PC loadings W re-indexed by height (rows=H, columns=PC1..PCk).
+    - Step5_Perturbation\T_k99\delta_c_used.csv
+        Meaning: Δc_i values per PC actually used in perturbations.
+    - Step5_Perturbation\T_k99\Perturbed_profiles_plus.csv
+        Meaning: Perturbed profiles with +Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\T_k99\Perturbed_profiles_minus.csv
+        Meaning: Perturbed profiles with −Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\T_k99\Delta_profiles_plus_theoretical.csv
+        Meaning: Theoretical deltas (+Δc_i·w_i) added to the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k99\Delta_profiles_minus_theoretical.csv
+        Meaning: Theoretical deltas (−Δc_i·w_i) subtracted from the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k99\Delta_profiles_plus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k99\Delta_profiles_minus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\T_k99\per_PC\PCi_perturbation.csv (one file per PC)
+        Meaning: Detailed per-PC CSV with H, rep, plus, minus, Δc, w_i, and delta (theoretical/effective).
+
+  Dataset: Td_k95
+    - Step5_Perturbation\Td_k95\Representative_Td_profile_2km.csv
+        Meaning: Representative profile used as baseline (columns: H, var_rep).
+    - Step5_Perturbation\Td_k95\W_modes.csv
+        Meaning: PC loadings W re-indexed by height (rows=H, columns=PC1..PCk).
+    - Step5_Perturbation\Td_k95\delta_c_used.csv
+        Meaning: Δc_i values per PC actually used in perturbations.
+    - Step5_Perturbation\Td_k95\Perturbed_profiles_plus.csv
+        Meaning: Perturbed profiles with +Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\Td_k95\Perturbed_profiles_minus.csv
+        Meaning: Perturbed profiles with −Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\Td_k95\Delta_profiles_plus_theoretical.csv
+        Meaning: Theoretical deltas (+Δc_i·w_i) added to the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k95\Delta_profiles_minus_theoretical.csv
+        Meaning: Theoretical deltas (−Δc_i·w_i) subtracted from the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k95\Delta_profiles_plus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k95\Delta_profiles_minus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k95\per_PC\PCi_perturbation.csv (one file per PC)
+        Meaning: Detailed per-PC CSV with H, rep, plus, minus, Δc, w_i, and delta (theoretical/effective).
+
+  Dataset: Td_k99
+    - Step5_Perturbation\Td_k99\Representative_Td_profile_2km.csv
+        Meaning: Representative profile used as baseline (columns: H, var_rep).
+    - Step5_Perturbation\Td_k99\W_modes.csv
+        Meaning: PC loadings W re-indexed by height (rows=H, columns=PC1..PCk).
+    - Step5_Perturbation\Td_k99\delta_c_used.csv
+        Meaning: Δc_i values per PC actually used in perturbations.
+    - Step5_Perturbation\Td_k99\Perturbed_profiles_plus.csv
+        Meaning: Perturbed profiles with +Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\Td_k99\Perturbed_profiles_minus.csv
+        Meaning: Perturbed profiles with −Δc_i along each PC (rows=H, cols=PC1..PCk).
+    - Step5_Perturbation\Td_k99\Delta_profiles_plus_theoretical.csv
+        Meaning: Theoretical deltas (+Δc_i·w_i) added to the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k99\Delta_profiles_minus_theoretical.csv
+        Meaning: Theoretical deltas (−Δc_i·w_i) subtracted from the representative (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k99\Delta_profiles_plus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k99\Delta_profiles_minus_effective.csv
+        Meaning: Effective deltas after any physical clipping (Td only) (rows=H, cols=PCs).
+    - Step5_Perturbation\Td_k99\per_PC\PCi_perturbation.csv (one file per PC)
+        Meaning: Detailed per-PC CSV with H, rep, plus, minus, Δc, w_i, and delta (theoretical/effective).
+
+Notes:
+  - All CSVs include column headers; matrices indexed by height (H).
+  - Theoretical vs effective deltas differ only if dew-point clipping is applied.
+  - No detector system effects, thermal emission, or noise are included here (by design for Step 5).
