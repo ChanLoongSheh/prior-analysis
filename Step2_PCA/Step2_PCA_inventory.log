@@ -1,0 +1,82 @@
+Ground-based Atmospheric Profiles — Step 2: PCA
+Timestamp: 2025-08-26 20:37:54
+
+Inputs (from Step 1):
+  Step 1 directory: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed
+  - X_T_centered.csv (888 × 21): Centered temperature matrix (X_T − μ_T).
+  - X_Td_centered.csv (888 × 21): Centered dew-point matrix (X_Td − μ_Td).
+  - μ_T.csv (length 21): Mean temperature profile used for centering.
+  - μ_Td.csv (length 21): Mean dew-point profile used for centering.
+  - H.csv (length 61): Height grid (first 21 levels correspond to 0–2 km).
+
+Core PCA relation:
+  - C = X_centered · W
+    where C: scores (coefficients) matrix (n_samples × p),
+          X_centered: centered data matrix (888 × 21),
+          W: principal component loadings (21 × p).
+
+Shapes (as used):
+  - X_T_centered: (888, 21)
+  - X_Td_centered: (888, 21)
+  - mu_T: (21,)
+  - mu_Td: (21,)
+  - H: (61,)
+
+Selected number of components (k) by cumulative explained variance targets:
+  Temperature (T):
+    - 95% target: k = 1
+    - 99% target: k = 3
+  Dew-point (Td):
+    - 95% target: k = 3
+    - 99% target: k = 8
+
+Output files and meanings:
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_W.csv
+      Meaning: [W] Principal component loadings (21 × p). Rows indexed by first 21 heights (0–2 km). Columns PC1..PCp.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_W_k95.csv
+      Meaning: [W_k] First k principal component loadings for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_W_k99.csv
+      Meaning: [W_k] First k principal component loadings for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_cumulative.png
+      Meaning: [N/A] N/A
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_cumulative_explained_variance_ratio.csv
+      Meaning: [explained_variance_ratio] Fraction of variance explained by each PC.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_explained_variance.csv
+      Meaning: [explained_variance] Eigenvalue-like quantities per PC (sklearn definition).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_explained_variance_ratio.csv
+      Meaning: [explained_variance_ratio] Fraction of variance explained by each PC.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_scores.csv
+      Meaning: [scores] Scores (coefficients) C = X_centered · W (888 × p). Rows indexed by sample (file index). Columns PC1..PCp.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_scores_k95.csv
+      Meaning: [scores_k] Scores truncated to the first k PCs for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_scores_k99.csv
+      Meaning: [scores_k] Scores truncated to the first k PCs for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_T_scree.png
+      Meaning: [N/A] N/A
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_W.csv
+      Meaning: [W] Principal component loadings (21 × p). Rows indexed by first 21 heights (0–2 km). Columns PC1..PCp.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_W_k95.csv
+      Meaning: [W_k] First k principal component loadings for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_W_k99.csv
+      Meaning: [W_k] First k principal component loadings for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_cumulative.png
+      Meaning: [N/A] N/A
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_cumulative_explained_variance_ratio.csv
+      Meaning: [explained_variance_ratio] Fraction of variance explained by each PC.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_explained_variance.csv
+      Meaning: [explained_variance] Eigenvalue-like quantities per PC (sklearn definition).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_explained_variance_ratio.csv
+      Meaning: [explained_variance_ratio] Fraction of variance explained by each PC.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_scores.csv
+      Meaning: [scores] Scores (coefficients) C = X_centered · W (888 × p). Rows indexed by sample (file index). Columns PC1..PCp.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_scores_k95.csv
+      Meaning: [scores_k] Scores truncated to the first k PCs for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_scores_k99.csv
+      Meaning: [scores_k] Scores truncated to the first k PCs for the specified target (95% or 99%).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_PCA\PCA_Td_scree.png
+      Meaning: [N/A] N/A
+
+Notes:
+  - No detector system effects, thermal emission, or noise considerations are included in this stage.
+  - Row indices are preserved from Step 1 where applicable.
+  - These outputs are ready for downstream statistical analysis (Step 3) and representative profile selection (Step 4).
