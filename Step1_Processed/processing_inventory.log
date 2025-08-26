@@ -1,0 +1,60 @@
+Ground-based Atmospheric Profiles — Step 1: Data Loading and Preparation
+Timestamp: 2025-08-26 19:44:30
+
+Source data:
+  Root directory: ..\Data\888ground Radiance
+  Number of files processed: 888
+  File index range: 1 .. 888
+
+Consistency checks:
+  - Number of files processed: 888
+  - Max |Δλ| across files: 0.000e+00
+  - Max |ΔH| across files: 0.000e+00
+  - λ and H are consistent across files within tolerance.
+  - Saved λ to: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\lambda.csv
+  - Saved H to: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\H.csv
+  - Saved T_atm (first 21) to: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\T_atm_2km.csv
+  - Saved T_DP  (first 21) to: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\T_DP_2km.csv
+
+Variables (readable fonts and meanings):
+  - λ (lambda): Wavelength grid (vector), common to all files.
+  - H: Height grid (vector), common to all files.
+  - T_atm: Atmospheric temperature profile at multiple vertical levels (61 in raw files).
+  - T_DP: Dew-point temperature profile at multiple vertical levels (61 in raw files).
+  - X_T: Temperature matrix (888 × 21), constructed from T_atm first 21 levels (0–2 km).
+  - X_Td: Dew-point matrix (888 × 21), constructed from T_DP first 21 levels (0–2 km).
+  - μ_T (mu_T): Mean temperature profile (length 21) across the 888 samples.
+  - μ_Td (mu_Td): Mean dew-point profile (length 21) across the 888 samples.
+  - X_T_centered = X_T − μ_T (row-wise broadcast).
+  - X_Td_centered = X_Td − μ_Td (row-wise broadcast).
+
+Shapes and basic stats:
+  - λ shape: (3501,)
+  - H shape: (61,)
+  - T_atm (first 21) DataFrame shape: (888, 21)
+  - T_DP  (first 21) DataFrame shape: (888, 21)
+  - X_T shape: (888, 21)
+  - X_Td shape: (888, 21)
+
+Output files and their meanings:
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\lambda.csv
+      λ (lambda) wavelength grid saved once (common to all files).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\H.csv
+      H height grid saved once (common to all files).
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\T_atm_2km.csv
+      Aggregated T_atm profiles (first 21 levels, 0–2 km). Rows indexed by file index %d.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\T_DP_2km.csv
+      Aggregated T_DP profiles (first 21 levels, 0–2 km). Rows indexed by file index %d.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\X_T_centered.csv
+      PCA-ready centered temperature matrix (X_T − μ_T). Index aligned to T_atm_2km.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\X_Td_centered.csv
+      PCA-ready centered dew-point matrix (X_Td − μ_Td). Index aligned to T_DP_2km.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\mu_T.csv
+      μ_T (mean temperature profile, length 21) for centering.
+  - C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed\mu_Td.csv
+      μ_Td (mean dew-point profile, length 21) for centering.
+
+Notes for downstream steps:
+  - The centered matrices are ready for PCA (Step 2): C = X_centered · W.
+  - No detector system effects are included here (as requested for this stage).
+  - Row indices in the CSVs correspond to the %d index parsed from file names.
