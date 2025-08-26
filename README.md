@@ -82,18 +82,18 @@ We also need to choose a bin size for the histograms. A good starting point is t
 
 **Objective:** Create new, physically realistic profiles by perturbing the representative profile using the principal components and a defined coefficient differential ($`Δc`$).
 
-**Description:** This is the final step that synthesizes all previous work. We will take the representative profile and add a small perturbation based on one of the principal components. This perturbation is calculated by taking a principal component vector and scaling it by a "differential element" ($`Δc_i`$), which we determined from the statistical analysis in Step 3 (e.g., one bin width of the histogram).
+**Description:** This is the final step that synthesizes all previous work. We will take the representative profile and add a small perturbation based on one of the principal components. This perturbation is calculated by taking a principal component vector and scaling it by a "differential element" **($`Δc_i`$)**, which we determined from the statistical analysis in Step 3 (e.g., one bin width of the histogram).
 
 The reconstruction formula is the inverse of the PCA transformation:
 $` X_{new} = \mu + C_{new} \cdot W^T `$
 Where:
-*   $`X_new`$ is the new perturbed profile.
+*   $`X_{new}`$ is the new perturbed profile.
 *   $`μ`$ is the mean profile.
-*   $`C_new`$ is the vector of new coefficients. For a perturbation along the `i`-th component, $`C_new`$ would be $`C_rep + [0, ..., Δc_i, ..., 0]`$.
+*   $`C_{new}`$ is the vector of new coefficients. For a perturbation along the `i`-th component, $`C_{new}`$ would be $`C_rep + [0, ..., Δc_i, ..., 0]`$.
 *   $`W^T`$ is the transpose of the principal components matrix.
 
 ### **Conclusion and Next Steps**
 
-By following this implementation plan, you will successfully generate a set of physically meaningful atmospheric profile perturbations. For each principal component $`i`$, the difference between the representative profile and the profile perturbed by ``$`Δc_i`$`` constitutes the basis for your new weighting function.
+By following this implementation plan, you will successfully generate a set of physically meaningful atmospheric profile perturbations. For each principal component $`i`$, the difference between the representative profile and the profile perturbed by $`Δc_i`$ constitutes the basis for your new weighting function.
 
 The next step, which is outside the scope of this specific proposal, would be to feed these pairs of profiles (representative and perturbed) into your atmospheric radiative transfer model. The resulting difference in the surface-received radiance spectrum will be your new, robust, and physically realistic weighting function, ready to inform the optimal design of your filter system. This approach is methodologically sound and represents a significant improvement in the physical basis of your analysis.
