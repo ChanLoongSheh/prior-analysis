@@ -1,0 +1,53 @@
+Ground-based Atmospheric Profiles — Step 4: Representative Profile Selection
+Timestamp: 2025-08-26 21:45:17
+
+Inputs (from Step 1):
+  - X_T_centered: shape (888, 21) (file: Step1_Processed\X_T_centered.csv)
+  - X_Td_centered: shape (888, 21) (file: Step1_Processed\X_Td_centered.csv)
+  - T_atm_2km: shape (888, 21) (file: Step1_Processed\T_atm_2km.csv)
+  - T_DP_2km: shape (888, 21) (file: Step1_Processed\T_DP_2km.csv)
+  - μ_T (mean temperature; length 21): Step1_Processed\mu_T.csv
+      Parsed as: single-column no index (μ_T)
+      Attempts: [{'mode': 'index_col=0', 'shape': (21, 0), 'columns': []}, {'mode': 'no index_col', 'shape': (21, 1), 'columns': ['mu_T']}]
+  - μ_Td (mean dew point; length 21): Step1_Processed\mu_Td.csv
+      Parsed as: single-column no index (μ_Td)
+      Attempts: [{'mode': 'index_col=0', 'shape': (21, 0), 'columns': []}, {'mode': 'no index_col', 'shape': (21, 1), 'columns': ['mu_Td']}]
+  - H (first 21 used): Step1_Processed\H.csv
+      Parsed as: single-column no index (H_full)
+      Attempts: [{'mode': 'index_col=0', 'shape': (61, 0), 'columns': []}, {'mode': 'no index_col', 'shape': (61, 1), 'columns': ['H']}]
+
+Method:
+  - For each sample i, compute Euclidean norms over 0–2 km:
+      norm_T(i)  = ||X_T_centered[i, :]||₂
+      norm_Td(i) = ||X_Td_centered[i, :]||₂
+      norm_combined(i) = ||[X_T_centered[i, :], X_Td_centered[i, :]]||₂
+  - Select representative sample as argmin_i norm_combined(i).
+  - This is equivalent to selecting the profile closest to the mean in PCA coefficient space,
+    since PCA uses an orthonormal basis (no need to actually perform PCA for Step 4).
+
+Representative sample index (row index from Step 1 CSVs): 280
+  - norm_T: 1.907015e+00
+  - norm_Td: 7.376422e+00
+  - norm_combined: 7.618943e+00
+
+Outputs (saved to: Step4_RepresentativeProfile)
+  - Norms_All_Samples.csv
+      Columns: norm_T, norm_Td, norm_combined; Row index: sample ID.
+      Purpose: Provides per-sample distances to the mean profile in T, Td, and combined spaces.
+  - Representative_Sample_Index.csv
+      Single-row CSV keyed by rep_index; includes norm_T, norm_Td, norm_combined for the chosen sample.
+  - Representative_T_profile_2km.csv
+      Columns: H, T_atm; Row index: 0..20. The selected temperature profile over 0–2 km.
+  - Representative_Td_profile_2km.csv
+      Columns: H, T_DP; Row index: 0..20. The selected dew-point profile over 0–2 km.
+  - Representative_Anomaly_T_profile_2km.csv
+      Columns: H, T_anomaly = T_atm − μ_T; Row index: 0..20.
+  - Representative_Anomaly_Td_profile_2km.csv
+      Columns: H, Td_anomaly = T_DP − μ_Td; Row index: 0..20.
+  - Representative_Profile_Wide_2km.csv
+      Columns: H, T_atm, T_DP; Row index: 0..20. Convenience file combining T and Td.
+
+Notes:
+  - All CSVs include column headers and row indices.
+  - This step does not include any detector system effects (as requested).
+  - The selected representative profile is a real observed sample (not a synthetic mean).
