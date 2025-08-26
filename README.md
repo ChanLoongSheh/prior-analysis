@@ -52,8 +52,7 @@ It is crucial to "center" the data by subtracting the mean profile from each ind
 A key task here is to decide how many components (`k`) to retain. We will do this by examining the "explained variance ratio." We will plot the cumulative explained variance and select the number of components that captures a high percentage (e.g., 95% or 99%) of the total variance in the original profiles. This ensures our reduced model is a faithful representation of the original data.
 
 The transformation is as follows:
-$` C = X_{centered} \cdot W `$
-Where:
+$` C = X_{centered} \cdot W `$, Where:
 *   $`C`$ is the matrix of principal component coefficients (or scores).
 *   $`X_{centered}`$ is the (888, 21) centered data matrix.
 *   $`W`$ is the matrix of principal components (eigenvectors), with shape (21, $`k`$).
