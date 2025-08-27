@@ -23,3 +23,16 @@ Refer to my README.md file. This is a Project Proposal: Redefining Atmospheric W
 
 Step5:
 Refer to my README.md file. This is a Project Proposal: Redefining Atmospheric Weighting Functions using Principal Component Analysis for Optimal Filter Selection. Read it carefully and focus on the Step 5: Generate Perturbed Profiles. Use python to realize this step and do not worry about other steps. The detailed Step 1 2, 3 and 4 running record are 'processing_inventory.log', 'Step2_PCA_inventory.log', 'Step3_Stats_inventory.log' and 'step4_processing_inventory.log'. All output files shall be saved to a new folder named without timestamp. Do not run the code with command-line parsing. Also, generate a detailed log record file to conclude what (annotate the detailed meanings of the output files) and where is the output files. output csv files of step 1 2, 3 and step 4 are all with column header and row index.
+
+Debug:
+Refer to my README.md file. This is a Project Proposal: Redefining Atmospheric Weighting Functions using Principal Component Analysis for Optimal Filter Selection. Read it carefully and focus on the Step 3: Statistical Analysis of PCA Coefficients. We have already used python script "step3_stats_c.py" to realize this step and do not focus on other steps. The detailed Step 3 running record is 'Step3_Stats_inventory.log'. I would like to know:
+1. What established rule has been used in the step3_stats_c.py?
+2. Why used them (general principle)?
+3. How to construct the smooth PDF according to the histograms? 
+
+
+
+
+
+
+
