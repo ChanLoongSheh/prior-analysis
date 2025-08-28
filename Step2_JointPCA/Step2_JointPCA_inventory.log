@@ -1,0 +1,50 @@
+Ground-based Atmospheric Profiles — Step 2: Joint PCA (T + Td)
+Timestamp: 2025-08-28 22:47:41
+
+Inputs (from Step 1):
+  Step 1 directory: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed
+  - X_T_centered.csv (888 × 21): Centered temperature matrix (X_T − μ_T).
+  - X_Td_centered.csv (888 × 21): Centered dew-point matrix (X_Td − μ_Td).
+  - μ_T.csv (length 21), μ_Td.csv (length 21), H.csv (length 61).
+
+Core joint PCA relation:
+  - C = X_joint_centered · W_joint
+    where C: scores (n_samples × p),
+          X_joint_centered: (888 × 42) = [T(21) | Td(21)],
+          W_joint: loadings (42 × p).
+
+Shapes (as used):
+  - X_T_centered: (888, 21)
+  - X_Td_centered: (888, 21)
+  - X_joint: (888, 42)
+  - H: (61,)
+
+Scaling applied:
+  - mode: zscore
+  - s_T_per_feature: array shape (21,)
+  - s_Td_per_feature: array shape (21,)
+
+Selected number of components (k) by cumulative explained variance targets (joint):
+  - 95% target: k = 4
+  - 99% target: k = 9
+
+Output files:
+  - PCA_joint_T_PC1-9: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_T_PC1-9.png
+  - PCA_joint_Td_PC1-9: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_Td_PC1-9.png
+  - PCA_joint_W_T_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_W_T.csv
+  - PCA_joint_W_T_k95_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_W_T_k95.csv
+  - PCA_joint_W_T_k99_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_W_T_k99.csv
+  - PCA_joint_W_Td_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_W_Td.csv
+  - PCA_joint_W_Td_k95_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_W_Td_k95.csv
+  - PCA_joint_W_Td_k99_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_W_Td_k99.csv
+  - PCA_joint_cumulative_explained_variance_ratio_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_cumulative_explained_variance_ratio.csv
+  - PCA_joint_explained_variance_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_explained_variance.csv
+  - PCA_joint_explained_variance_ratio_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_explained_variance_ratio.csv
+  - PCA_joint_scores_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_scores.csv
+  - PCA_joint_scores_k95_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_scores_k95.csv
+  - PCA_joint_scores_k99_csv: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA_20250828_224738\PCA_joint_scores_k99.csv
+
+Notes:
+  - If scaling_mode='zscore', loadings are dimensionless; compare T vs Td shapes rather than amplitudes.
+  - If scaling_mode='none', loadings retain physical units and relative magnitudes.
+  - PC signs are arbitrary; interpret relative shapes and co-variations of T and Td.

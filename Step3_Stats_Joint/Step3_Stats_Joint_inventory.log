@@ -1,0 +1,60 @@
+Ground-based Atmospheric Profiles — Step 3 (Joint): Statistical Analysis of PCA Coefficients
+Timestamp: 2025-08-28 23:34:41
+
+Inputs (from Step 2 Joint PCA):
+  Step 2 Joint directory: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA
+  - PCA_joint_scores_k95.csv / PCA_joint_scores_k99.csv: Truncated joint scores C = X_joint_centered · W_joint.
+  - PCA_joint_explained_variance_ratio.csv: Full explained variance ratios per PC (sklearn definition).
+
+Core quantities:
+  - C (scores): Principal component coefficients matrix for the retained PCs.
+  - Δc_i (delta_c): Recommended coefficient differential per PC (selected histogram bin width).
+  - KDE: Gaussian kernel with Scott bandwidth; FWHM = 2.35482 × h, h = n^(−1/5) × std.
+
+Outputs (this step):
+  Dataset: Joint_k95
+    Summary CSVs:
+      - Step3_Stats_Joint\Joint_k95\per_PC_stats.csv
+        Meaning: Per-PC descriptive statistics (mean, std, skewness, kurtosis, percentiles, normality test).
+      - Step3_Stats_Joint\Joint_k95\per_PC_binning_plan.csv
+        Meaning: FD/Scott/Sturges binning plan; recommended rule, bins, and bin width.
+      - Step3_Stats_Joint\Joint_k95\delta_c_recommended.csv
+        Meaning: Recommended Δc_i per PC (equal to recommended histogram bin width).
+      - Step3_Stats_Joint\Joint_k95\explained_variance_ratio_k.csv
+        Meaning: Explained variance ratios for the retained PCs (truncated to k).
+      - Step3_Stats_Joint\Joint_k95\kde_bandwidth_report.csv
+        Meaning: KDE kernel, Scott/Silverman bandwidths, and Gaussian FWHM per PC.
+    Histograms and per-PC plots:
+      - CSV histograms (bin_left, bin_right, bin_center, count, density) per PC: saved under Step3_Stats_Joint\Joint_k95\histograms
+      - PNG plots (per PC) with histogram (density), KDE (Gaussian), and Gaussian fit: saved under Step3_Stats_Joint\Joint_k95\plots
+    Grid figure (all PCs):
+      - Step3_Stats_Joint\Joint_k95\plots\all_PCs_pdf_grid.png
+        Meaning: Multi-panel PDF visualization across all retained PCs.
+    Bin-size comparison plots (per PC):
+      - PNG overlays comparing FD/Scott/Sturges and scaled-FD vs KDE: saved under Step3_Stats_Joint\Joint_k95\plots_compare
+
+  Dataset: Joint_k99
+    Summary CSVs:
+      - Step3_Stats_Joint\Joint_k99\per_PC_stats.csv
+        Meaning: Per-PC descriptive statistics (mean, std, skewness, kurtosis, percentiles, normality test).
+      - Step3_Stats_Joint\Joint_k99\per_PC_binning_plan.csv
+        Meaning: FD/Scott/Sturges binning plan; recommended rule, bins, and bin width.
+      - Step3_Stats_Joint\Joint_k99\delta_c_recommended.csv
+        Meaning: Recommended Δc_i per PC (equal to recommended histogram bin width).
+      - Step3_Stats_Joint\Joint_k99\explained_variance_ratio_k.csv
+        Meaning: Explained variance ratios for the retained PCs (truncated to k).
+      - Step3_Stats_Joint\Joint_k99\kde_bandwidth_report.csv
+        Meaning: KDE kernel, Scott/Silverman bandwidths, and Gaussian FWHM per PC.
+    Histograms and per-PC plots:
+      - CSV histograms (bin_left, bin_right, bin_center, count, density) per PC: saved under Step3_Stats_Joint\Joint_k99\histograms
+      - PNG plots (per PC) with histogram (density), KDE (Gaussian), and Gaussian fit: saved under Step3_Stats_Joint\Joint_k99\plots
+    Grid figure (all PCs):
+      - Step3_Stats_Joint\Joint_k99\plots\all_PCs_pdf_grid.png
+        Meaning: Multi-panel PDF visualization across all retained PCs.
+    Bin-size comparison plots (per PC):
+      - PNG overlays comparing FD/Scott/Sturges and scaled-FD vs KDE: saved under Step3_Stats_Joint\Joint_k99\plots_compare
+
+Notes:
+  - Outputs saved under a non-timestamped folder (Step3_Stats_Joint).
+  - KDE is a non-parametric density estimate; the plotted curve integrates to 1.
+  - Δc_i is intended for Step 5 coefficient perturbation magnitudes along each PC.
