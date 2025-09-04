@@ -1,0 +1,55 @@
+Ground-based Atmospheric Profiles — Step 5 (Joint): Generate Perturbed Profiles
+Timestamp: 2025-08-29 00:04:29
+
+Inputs used:
+  - Step 1 (for s_T, s_Td): C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step1_Processed
+  - Step 2 Joint (W_T_k99, W_Td_k99, EVR): C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step2_JointPCA
+  - Step 3 Joint (Δc_i): C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step3_Stats_Joint
+  - Step 4 (Representative idx=280): C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step4_RepresentativeProfile
+
+Core relations (z-score scaled joint PCA, mapped back to physical units):
+  - Δx_scaled_T  = Δc_i · w_T_i,   Δx_scaled_Td = Δc_i · w_Td_i
+  - Δx_T  = s_T  ⊙ Δx_scaled_T,    Δx_Td       = s_Td ⊙ Δx_scaled_Td
+  - T_pert = T_rep ± Δx_T,         Td_pert     = Td_rep ± Δx_Td (with optional Td ≤ T clipping)
+
+Outputs saved in this step:
+  - Representative_T_Td_profile_2km.csv: Step5_Perturbation_Joint\Joint_k99\Representative_T_Td_profile_2km.csv
+  - T_delta_plus_theoretical.csv: Step5_Perturbation_Joint\Joint_k99\T_delta_plus_theoretical.csv
+  - T_delta_minus_theoretical.csv: Step5_Perturbation_Joint\Joint_k99\T_delta_minus_theoretical.csv
+  - T_plus.csv: Step5_Perturbation_Joint\Joint_k99\T_plus.csv
+  - T_minus.csv: Step5_Perturbation_Joint\Joint_k99\T_minus.csv
+  - Td_delta_plus_theoretical.csv: Step5_Perturbation_Joint\Joint_k99\Td_delta_plus_theoretical.csv
+  - Td_delta_minus_theoretical.csv: Step5_Perturbation_Joint\Joint_k99\Td_delta_minus_theoretical.csv
+  - Td_plus.csv: Step5_Perturbation_Joint\Joint_k99\Td_plus.csv
+  - Td_minus.csv: Step5_Perturbation_Joint\Joint_k99\Td_minus.csv
+  - Td_delta_plus_effective.csv: Step5_Perturbation_Joint\Joint_k99\Td_delta_plus_effective.csv
+  - Td_delta_minus_effective.csv: Step5_Perturbation_Joint\Joint_k99\Td_delta_minus_effective.csv
+  - explained_variance_ratio_k99.csv: Step5_Perturbation_Joint\Joint_k99\explained_variance_ratio_k99.csv
+  - delta_c_used_k99.csv: Step5_Perturbation_Joint\Joint_k99\delta_c_used_k99.csv
+  - per_PC/PC1_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC1_joint_perturbation.csv
+  - per_PC/PC2_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC2_joint_perturbation.csv
+  - per_PC/PC3_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC3_joint_perturbation.csv
+  - per_PC/PC4_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC4_joint_perturbation.csv
+  - per_PC/PC5_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC5_joint_perturbation.csv
+  - per_PC/PC6_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC6_joint_perturbation.csv
+  - per_PC/PC7_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC7_joint_perturbation.csv
+  - per_PC/PC8_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC8_joint_perturbation.csv
+  - per_PC/PC9_joint_perturbation.csv: Step5_Perturbation_Joint\Joint_k99\per_PC\PC9_joint_perturbation.csv
+
+Figures (per PC):
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC1_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC2_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC3_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC4_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC5_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC6_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC7_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC8_T_Td_perturbation.png
+  - Step5_Perturbation_Joint\Joint_k99\plots\PC9_T_Td_perturbation.png
+  Each figure contains two panels: Temperature and Dew-point overlays (rep, +Δc_i, −Δc_i).
+
+Options: ENFORCE_TD_LE_T = True
+Notes:
+  - Representative profile corresponds to sample index 280 (from Step 4).
+  - EVR annotations are included when available.
+  - No detector system effects are included in this step.
