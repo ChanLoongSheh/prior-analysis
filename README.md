@@ -174,12 +174,12 @@ $` \Delta\mathbf{P} = \mathbf{K} \cdot \Delta\mathbf{c} `$
 Where:
 *   **$`ΔP`$** is an `M × 1` vector of power changes for `M` filters.
 *   **$`Δc`$** is the `9 × 1` vector of coefficient changes we want to retrieve.
-*   $`**K**`$ is the `M × 9` **Jacobian matrix** (or kernel matrix). Each element `K_{ji}` represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
+*   **$`K`$** is the `M × 9` **Jacobian matrix** (or kernel matrix). Each element $`K_{ji}`$ represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
 
     $` K_{ji} = \frac{\pi}{\Delta c_i} \int \Delta I_{i,+}(\lambda) \cdot T_{filter,j}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
     (Note: We use the `+Δcᵢ` perturbation by convention, assuming linearity holds for `−Δcᵢ` as well).
 
-The goal of the inverse problem is to find $`Δ**c**`$ given a measurement of $`Δ**P**`$. A good filter set will produce a Jacobian matrix $`**K**`$ that is well-conditioned, meaning the inversion is stable and does not amplify measurement noise. The "goodness" of $`**K**`$ can be quantified objectively. A powerful metric is the **smallest singular value** of $`**K**`$, denoted $`σ_min`$. Maximizing $`σ_min`$ is equivalent to minimizing the worst-case error amplification.
+The goal of the inverse problem is to find **$`Δc`$** given a measurement of **$`ΔP`$**. A good filter set will produce a Jacobian matrix **$`K`$** that is well-conditioned, meaning the inversion is stable and does not amplify measurement noise. The "goodness" of **$`K`$** can be quantified objectively. A powerful metric is the **smallest singular value** of **$`K`$**, denoted ``$`σ_min`$``. Maximizing $`σ_min`$ is equivalent to minimizing the worst-case error amplification.
 
 We will use a **Sequential Forward Selection (SFS)** algorithm, a greedy approach that builds the optimal filter set one filter at a time.
 
