@@ -121,7 +121,7 @@ The primary deliverable of this step will be 18 plots, each showing `ΔI(λ)` vs
 **Description:** Not all wavelengths are created equal. Some are highly sensitive to atmospheric changes, while others are not. We will identify the "action regions" by examining our 18 `ΔI(λ)` spectra.
 
 The methodology is as follows:
-1.  **Overlay the Weighting Functions:** Plot all 18 `ΔI_{i, \pm}(\lambda)` spectra on a single graph. This will create a visual map of atmospheric sensitivity.
+1.  **Overlay the Weighting Functions:** Plot all 18 $`ΔI_{i, \pm}(\lambda)`$ spectra on a single graph. This will create a visual map of atmospheric sensitivity.
 2.  **Identify High-Signal Regions:** Look for spectral bands where the `ΔI` values (both positive and negative) have the largest magnitudes. These are the wavelengths where the principal modes of atmospheric variability produce the strongest radiance changes. These are prime candidates for filter placement.
 3.  **Identify Regions of Orthogonality:** Look for bands where the spectral signatures of different PCs are distinct. For example, a region where `ΔI₁` is strongly positive while `ΔI₂` is strongly negative is extremely valuable, as a filter placed there can help differentiate between these two atmospheric modes.
 
@@ -153,20 +153,69 @@ A signal `ΔP` is considered detectable if its magnitude is significantly greate
 
 ---
 
-### **Step 9: Iterative Filter Set Design and Performance Evaluation**
+### **Step 9 (Revised): Objective Filter Set Optimization via Sequential Forward Selection**
 
-**Objective:** To propose a final, optimized set of filters and answer the question: "How many filters are enough?"
+**Objective:** To algorithmically determine the optimal number, central wavelengths, and bandwidths of the filters by maximizing the information content and minimizing the retrieval error of the atmospheric state.
 
-**Description:** This final step synthesizes all previous analysis to construct a robust and efficient filter set.
+**Description:** The core idea is to treat the filter selection as a formal optimization problem. We want to select a set of filters that makes the different principal modes of the atmosphere as distinguishable as possible in the measurement space (i.e., the space of detector power readings).
 
-1.  **Propose a Candidate Filter Set:** Based on the high-signal and high-orthogonality regions identified in Steps 7 and 8, propose an initial set of `M` filters. Define their central wavelengths and bandwidths. You can start with `M=11` to match your existing hardware for a comparative analysis.
+First, let's formalize our forward model. The change in the atmospheric state can be described by the vector of PCA coefficient changes, `Δc`.
 
-2.  **Construct the System Response Matrix:** For your candidate set of `M` filters, calculate the power change `ΔP` for each of the 18 atmospheric perturbations. This gives you a system response matrix, `K`, of size `(M × 18)`.
+$` \Delta\mathbf{c} = [\Delta c_1, \Delta c_2, ..., \Delta c_9]^T `$
 
-    $` K_{j, (i, \pm)} = \Delta P_{i, \pm} \text{ for filter } j `$
+The change in power measured by a filter `j`, `ΔPⱼ`, is a linear function of these coefficient changes:
 
-3.  **Evaluate the Filter Set:** The effectiveness of the filter set depends on its ability to distinguish the different principal components.
-    *   **How many filters are enough?** To uniquely solve for the coefficients of `k=9` PCs, you need at least `k=9` independent measurements. Therefore, you should aim for at least **9 filters**. Using more (e.g., 11) can provide redundancy and improve robustness to noise.
-    *   **Which filters are best?** The best set of filters is one that makes the different PC perturbations distinguishable. In linear algebra terms, this means the columns of the response matrix `K` corresponding to the different PCs should be as linearly independent as possible. A formal way to check this is to analyze the condition number of the matrix `K` (or relevant sub-matrices). A low condition number implies a stable system where small errors in measured voltage will not lead to large errors in the retrieved atmospheric coefficients.
+$` \Delta P_j = \sum_{i=1}^{9} K_{ji} \cdot \Delta c_i `$
 
-By iterating on filter placement and evaluating the resulting response matrix `K`, you can converge on a final proposed filter set that is optimally tuned to the true, data-driven modes of atmospheric variability. This provides a powerful, physically-grounded justification for your instrument design.
+This can be written in matrix form:
+
+$` \Delta\mathbf{P} = \mathbf{K} \cdot \Delta\mathbf{c} `$
+
+Where:
+*   `Δ**P**` is an `M × 1` vector of power changes for `M` filters.
+*   `Δ**c**` is the `9 × 1` vector of coefficient changes we want to retrieve.
+*   `**K**` is the `M × 9` **Jacobian matrix** (or kernel matrix). Each element `K_{ji}` represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
+
+    $` K_{ji} = \frac{\pi}{\Delta c_i} \int \Delta I_{i,+}(\lambda) \cdot T_{filter,j}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
+    (Note: We use the `+Δcᵢ` perturbation by convention, assuming linearity holds for `−Δcᵢ` as well).
+
+The goal of the inverse problem is to find `Δ**c**` given a measurement of `Δ**P**`. A good filter set will produce a Jacobian matrix `**K**` that is well-conditioned, meaning the inversion is stable and does not amplify measurement noise. The "goodness" of `**K**` can be quantified objectively. A powerful metric is the **smallest singular value** of `**K**`, denoted `σ_min`. Maximizing `σ_min` is equivalent to minimizing the worst-case error amplification.
+
+We will use a **Sequential Forward Selection (SFS)** algorithm, a greedy approach that builds the optimal filter set one filter at a time.
+
+#### **Step 9.1: Define the Candidate Filter Space**
+
+We cannot search a continuous space of all possible filters. Instead, we must discretize it.
+1.  **Central Wavelengths (`λ_c`):** Define a grid of possible central wavelengths. For example, from 4 µm to 20 µm in steps of 0.1 µm. This grid should cover all regions where you observed significant radiance changes in Step 7.
+2.  **Bandwidths (`Δλ`):** For each central wavelength, define a few possible bandwidths (e.g., 0.2 µm, 0.5 µm, 1.0 µm). Assume a simple boxcar or Gaussian shape for the filter transmittance `T_filter(λ)`.
+
+This creates a finite library of several hundred or a few thousand "candidate filters."
+
+#### **Step 9.2: The Greedy Selection Algorithm**
+
+The algorithm proceeds as follows:
+
+**Iteration 1: Select the Best First Filter**
+1.  For each candidate filter `j` in your library, construct the `1 × 9` Jacobian matrix `**K**_j`.
+2.  Calculate a metric of its total sensitivity. A good metric is the squared Frobenius norm, which is the sum of squares of its elements: `||**K**_j||_F² = Σᵢ(K_{ji})²`.
+3.  Select the filter `j*` that **maximizes this norm**. This filter is the one most sensitive to the dominant modes of atmospheric variability. Add it to your `OptimizedSet`.
+
+**Iteration 2: Select the Best Second Filter**
+1.  Now, for every *remaining* candidate filter `k` in your library, temporarily add it to your `OptimizedSet`. This creates a `2 × 9` Jacobian matrix `**K**_{j*, k}`.
+2.  Perform a Singular Value Decomposition (SVD) on this `**K**_{j*, k}` matrix and find its smallest singular value, `σ_min`.
+3.  Select the filter `k*` that **maximizes `σ_min`**. This filter is the one that adds the most *new, independent* information to the system, making it easier to distinguish atmospheric modes that might have looked similar to the first filter. Add `k*` to your `OptimizedSet`.
+
+**Iteration m: Select the Best m-th Filter**
+1.  With `m-1` filters already in `OptimizedSet`, iterate through all remaining candidate filters `l`.
+2.  For each, form the `m × 9` Jacobian matrix `**K**_m` and find its smallest singular value, `σ_min`.
+3.  Select the filter `l*` that maximizes `σ_min` and add it to `OptimizedSet`.
+
+#### **Step 9.3: Determine the Optimal Number of Filters (Stopping Criterion)**
+
+Continue the iterative process. With each new filter added, plot the value of the maximized `σ_min` versus the number of filters (`m`). You will typically see a curve that rises sharply at first and then begins to flatten out.
+
+You can stop when:
+*   You reach the "knee" of the curve, where adding another filter provides only a marginal improvement in `σ_min`. This indicates you have captured most of the available information.
+*   You have at least `M=9` filters, which is the theoretical minimum to resolve `k=9` unknown coefficients. Continuing to `M=11` or `M=12` can add robustness and redundancy.
+
+The final `OptimizedSet` contains the central wavelengths and bandwidths of your objectively determined optimal filter set.
