@@ -176,10 +176,9 @@ Where:
 *   **$`Δc`$** is the `9 × 1` vector of coefficient changes we want to retrieve.
 *   **$`K`$** is the `M × 9` **Jacobian matrix** (or kernel matrix). Each element $`K_{ji}`$ represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
 
-    $` K_{ji} = \frac{\pi}{\Delta c_i} \int \Delta I_{i,+}(\lambda) \cdot T_{filter,j}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
-    (Note: We use the `+Δcᵢ` perturbation by convention, assuming linearity holds for `−Δcᵢ` as well).
+    $` K_{ji} = \frac{\pi}{\Delta c_i} \int \Delta I_{i,±}(\lambda) \cdot T_{filter,j}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
 
-The goal of the inverse problem is to find **$`Δc`$** given a measurement of **$`ΔP`$**. A good filter set will produce a Jacobian matrix **$`K`$** that is well-conditioned, meaning the inversion is stable and does not amplify measurement noise. The "goodness" of **$`K`$** can be quantified objectively. A powerful metric is the **smallest singular value** of **$`K`$**, denoted $`σ_min`$. Maximizing $`σ_min`$ is equivalent to minimizing the worst-case error amplification.
+The goal of the inverse problem is to find **$`Δc`$** given a measurement of **$`ΔP`$**. A good filter set will produce a Jacobian matrix **$`K`$** that is well-conditioned, meaning the inversion is stable and does not amplify measurement noise. The "goodness" of **$`K`$** can be quantified objectively. A powerful metric is the **smallest singular value** of **$`K`$**, denoted $`σ_{min}`$. Maximizing $`σ_{min}`$ is equivalent to minimizing the worst-case error amplification.
 
 We will use a **Sequential Forward Selection (SFS)** algorithm, a greedy approach that builds the optimal filter set one filter at a time.
 
@@ -202,20 +201,20 @@ The algorithm proceeds as follows:
 
 **Iteration 2: Select the Best Second Filter**
 1.  Now, for every *remaining* candidate filter `k` in your library, temporarily add it to your `OptimizedSet`. This creates a `2 × 9` Jacobian matrix **$`K_{j*, k}`$**.
-2.  Perform a Singular Value Decomposition (SVD) on this **$`K_{j*, k}`$** matrix and find its smallest singular value, $`σ_min`$.
-3.  Select the filter $`k*`$ that **maximizes $`σ_min`$**. This filter is the one that adds the most *new, independent* information to the system, making it easier to distinguish atmospheric modes that might have looked similar to the first filter. Add $`k*`$ to your `OptimizedSet`.
+2.  Perform a Singular Value Decomposition (SVD) on this **$`K_{j*, k}`$** matrix and find its smallest singular value, $`σ_{min}`$.
+3.  Select the filter $`k*`$ that **maximizes $`σ_{min}`$**. This filter is the one that adds the most *new, independent* information to the system, making it easier to distinguish atmospheric modes that might have looked similar to the first filter. Add $`k*`$ to your `OptimizedSet`.
 
 **Iteration m: Select the Best m-th Filter**
 1.  With `m-1` filters already in `OptimizedSet`, iterate through all remaining candidate filters `l`.
-2.  For each, form the `m × 9` Jacobian matrix **$`K_m`$** and find its smallest singular value, $`σ_min`$.
-3.  Select the filter $`l*`$ that maximizes $`σ_min`$ and add it to `OptimizedSet`.
+2.  For each, form the `m × 9` Jacobian matrix **$`K_m`$** and find its smallest singular value, $`σ_{min}`$.
+3.  Select the filter $`l*`$ that maximizes $`σ_{min}`$ and add it to `OptimizedSet`.
 
 #### **Step 9.3: Determine the Optimal Number of Filters (Stopping Criterion)**
 
-Continue the iterative process. With each new filter added, plot the value of the maximized $`σ_min`$ versus the number of filters (`m`). You will typically see a curve that rises sharply at first and then begins to flatten out.
+Continue the iterative process. With each new filter added, plot the value of the maximized $`σ_{min}`$ versus the number of filters (`m`). You will typically see a curve that rises sharply at first and then begins to flatten out.
 
 You can stop when:
-*   You reach the "knee" of the curve, where adding another filter provides only a marginal improvement in $`σ_min`$. This indicates you have captured most of the available information.
+*   You reach the "knee" of the curve, where adding another filter provides only a marginal improvement in $`σ_{min}`$. This indicates you have captured most of the available information.
 *   You have at least `M=9` filters, which is the theoretical minimum to resolve `k=9` unknown coefficients. Continuing to `M=11` or `M=12` can add robustness and redundancy.
 
 The final `OptimizedSet` contains the central wavelengths and bandwidths of your objectively determined optimal filter set.
