@@ -93,8 +93,80 @@ Where:
 
 ---
 
-### **Conclusion and Next Steps**
+### **Step 6: Generation of PCA-based Radiance Perturbation Spectra (Weighting Functions)**
 
-By following this implementation plan, you will successfully generate a set of physically meaningful atmospheric profile perturbations. For each principal component $`i`$, the difference between the representative profile and the profile perturbed by $`Δc_i`$ constitutes the basis for your new weighting function.
+**Objective:** To compute the change in downwelling spectral radiance caused by each principal mode of atmospheric variation. These radiance difference spectra, `ΔI(λ)`, will serve as our new, physically representative weighting functions.
 
-The next step, which is outside the scope of this specific proposal, would be to feed these pairs of profiles (representative and perturbed) into your atmospheric radiative transfer model. The resulting difference in the surface-received radiance spectrum will be your new, robust, and physically realistic weighting function, ready to inform the optimal design of your filter system. This approach is methodologically sound and represents a significant improvement in the physical basis of your analysis.
+**Description:** The core of this step is to calculate the difference between the radiance spectrum of each perturbed profile and the radiance spectrum of the unperturbed representative profile. We will have 18 such weighting functions, corresponding to the `±Δcᵢ` perturbations for each of the `k=9` principal components.
+
+The calculation is straightforward. For each perturbation `i` (from 1 to 9) and sign (`+` or `−`), the weighting function is:
+
+$` \Delta I_{i, \pm}(\lambda) = I_{pert, i, \pm}(\lambda) - I_{ref}(\lambda) `$
+
+Where:
+*   $`\Delta I_{i, \pm}(\lambda)`$ is the new weighting function for the i-th PC, corresponding to a coefficient change of `±Δcᵢ`. Its units are in W/(m²·sr·µm).
+*   $`I_{pert, i, \pm}(\lambda)`$ is the downwelling spectral radiance computed from the atmospheric profile perturbed by `±Δcᵢ` along the i-th PC.
+*   $`I_{ref}(\lambda)`$ is the spectral radiance from the unperturbed representative profile (from `Rad_NewModel66layers...280.mat`).
+
+A critical question arises here: should we use the absolute value `|ΔI|` or retain the sign? **We must retain the sign.** The sign tells us whether a given atmospheric variation mode *increases* or *decreases* the radiance at a specific wavelength. This is fundamental physical information that is essential for designing an effective retrieval algorithm. Losing it would be like discarding half of our results.
+
+The primary deliverable of this step will be 18 plots, each showing `ΔI(λ)` vs. wavelength `λ`, clearly identifying which PC and which sign (`+Δcᵢ` or `−Δcᵢ`) it corresponds to.
+
+---
+
+### **Step 7: Information Content Analysis for Optimal Filter Placement**
+
+**Objective:** To identify the most informative spectral regions for atmospheric sounding by analyzing the set of new weighting functions.
+
+**Description:** Not all wavelengths are created equal. Some are highly sensitive to atmospheric changes, while others are not. We will identify the "action regions" by examining our 18 `ΔI(λ)` spectra.
+
+The methodology is as follows:
+1.  **Overlay the Weighting Functions:** Plot all 18 `ΔI_{i, \pm}(\lambda)` spectra on a single graph. This will create a visual map of atmospheric sensitivity.
+2.  **Identify High-Signal Regions:** Look for spectral bands where the `ΔI` values (both positive and negative) have the largest magnitudes. These are the wavelengths where the principal modes of atmospheric variability produce the strongest radiance changes. These are prime candidates for filter placement.
+3.  **Identify Regions of Orthogonality:** Look for bands where the spectral signatures of different PCs are distinct. For example, a region where `ΔI₁` is strongly positive while `ΔI₂` is strongly negative is extremely valuable, as a filter placed there can help differentiate between these two atmospheric modes.
+
+This qualitative analysis will guide our initial filter selection, pointing us toward the spectral windows that contain the most information about the atmospheric state as defined by our PCA basis.
+
+---
+
+### **Step 8: Quantifying Detectable Signals for a Realistic Instrument**
+
+**Objective:** To connect the theoretical radiance changes to the practical capabilities of your detector system and determine if the signals are strong enough to be reliably measured.
+
+**Description:** A large radiance change is useless if it's smaller than your instrument's noise floor. In this step, we will calculate the actual change in power that your detector would register for each perturbation and compare it to the detector's noise level.
+
+For a given hypothetical optical filter with transmittance `T_filter(λ)`, the change in detected power `ΔP` for a given perturbation is calculated by integrating the radiance change through your complete detector system.
+
+$` \Delta P_{i, \pm} = \pi \cdot \int \Delta I_{i, \pm}(\lambda) \cdot T_{filter}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
+
+Where:
+*   $`\Delta P_{i, \pm}`$ is the change in absorbed power (in Watts) at the detector for the perturbation `i,±`.
+*   The factor of `π` is included to convert from spectral radiance (W/m²·sr·µm) to spectral irradiance (W/m²·µm) assuming isotropic downwelling radiance.
+*   $`T_{ZnSe}(\lambda)`$ is the transmittance of the Zinc Selenide window.
+*   $`A_{LiTaO_3}(\lambda)`$ is the spectral absorptivity of the Lithium Tantalate detector material.
+
+We then compare this signal to the detector's noise. The noise equivalent power (NEP) is given as 22.6 nW/√Hz. The total noise power `P_noise` depends on the measurement bandwidth `B` (in Hz), which is inversely related to the integration time `τ` (i.e., `B ≈ 1/τ`).
+
+$` P_{noise} = NEP \cdot \sqrt{B} `$
+
+A signal `ΔP` is considered detectable if its magnitude is significantly greater than `P_noise`. This analysis allows us to refine the filter locations identified in Step 7 by ensuring that the resulting power changes are measurable by your actual hardware.
+
+---
+
+### **Step 9: Iterative Filter Set Design and Performance Evaluation**
+
+**Objective:** To propose a final, optimized set of filters and answer the question: "How many filters are enough?"
+
+**Description:** This final step synthesizes all previous analysis to construct a robust and efficient filter set.
+
+1.  **Propose a Candidate Filter Set:** Based on the high-signal and high-orthogonality regions identified in Steps 7 and 8, propose an initial set of `M` filters. Define their central wavelengths and bandwidths. You can start with `M=11` to match your existing hardware for a comparative analysis.
+
+2.  **Construct the System Response Matrix:** For your candidate set of `M` filters, calculate the power change `ΔP` for each of the 18 atmospheric perturbations. This gives you a system response matrix, `K`, of size `(M × 18)`.
+
+    $` K_{j, (i, \pm)} = \Delta P_{i, \pm} \text{ for filter } j `$
+
+3.  **Evaluate the Filter Set:** The effectiveness of the filter set depends on its ability to distinguish the different principal components.
+    *   **How many filters are enough?** To uniquely solve for the coefficients of `k=9` PCs, you need at least `k=9` independent measurements. Therefore, you should aim for at least **9 filters**. Using more (e.g., 11) can provide redundancy and improve robustness to noise.
+    *   **Which filters are best?** The best set of filters is one that makes the different PC perturbations distinguishable. In linear algebra terms, this means the columns of the response matrix `K` corresponding to the different PCs should be as linearly independent as possible. A formal way to check this is to analyze the condition number of the matrix `K` (or relevant sub-matrices). A low condition number implies a stable system where small errors in measured voltage will not lead to large errors in the retrieved atmospheric coefficients.
+
+By iterating on filter placement and evaluating the resulting response matrix `K`, you can converge on a final proposed filter set that is optimally tuned to the true, data-driven modes of atmospheric variability. This provides a powerful, physically-grounded justification for your instrument design.
