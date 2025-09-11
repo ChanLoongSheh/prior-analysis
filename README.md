@@ -172,8 +172,8 @@ This can be written in matrix form:
 $` \Delta\mathbf{P} = \mathbf{K} \cdot \Delta\mathbf{c} `$
 
 Where:
-*   $`Δ**P**`$ is an `M × 1` vector of power changes for `M` filters.
-*   $`Δ**c**`$ is the `9 × 1` vector of coefficient changes we want to retrieve.
+*   **$`ΔP`$** is an `M × 1` vector of power changes for `M` filters.
+*   **$`Δc`$** is the `9 × 1` vector of coefficient changes we want to retrieve.
 *   $`**K**`$ is the `M × 9` **Jacobian matrix** (or kernel matrix). Each element `K_{ji}` represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
 
     $` K_{ji} = \frac{\pi}{\Delta c_i} \int \Delta I_{i,+}(\lambda) \cdot T_{filter,j}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
