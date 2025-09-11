@@ -159,7 +159,7 @@ A signal `ΔP` is considered detectable if its magnitude is significantly greate
 
 **Description:** The core idea is to treat the filter selection as a formal optimization problem. We want to select a set of filters that makes the different principal modes of the atmosphere as distinguishable as possible in the measurement space (i.e., the space of detector power readings).
 
-First, let's formalize our forward model. The change in the atmospheric state can be described by the vector of PCA coefficient changes, ±`Δc`.
+First, let's formalize our forward model. The change in the atmospheric state can be described by the vector of PCA coefficient changes, `±Δc`.
 
 $` \Delta\mathbf{c} = [±\Delta c_1, ±\Delta c_2, ..., ±\Delta c_9]^T `$
 
