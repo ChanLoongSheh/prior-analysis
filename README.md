@@ -153,19 +153,19 @@ A signal `ΔP` is considered detectable if its magnitude is significantly greate
 
 ---
 
-### **Step 9 (Revised): Objective Filter Set Optimization via Sequential Forward Selection**
+### **Step 9 : Objective Filter Set Optimization via Sequential Forward Selection**
 
 **Objective:** To algorithmically determine the optimal number, central wavelengths, and bandwidths of the filters by maximizing the information content and minimizing the retrieval error of the atmospheric state.
 
 **Description:** The core idea is to treat the filter selection as a formal optimization problem. We want to select a set of filters that makes the different principal modes of the atmosphere as distinguishable as possible in the measurement space (i.e., the space of detector power readings).
 
-First, let's formalize our forward model. The change in the atmospheric state can be described by the vector of PCA coefficient changes, `Δc`.
+First, let's formalize our forward model. The change in the atmospheric state can be described by the vector of PCA coefficient changes, ±`Δc`.
 
-$` \Delta\mathbf{c} = [\Delta c_1, \Delta c_2, ..., \Delta c_9]^T `$
+$` \Delta\mathbf{c} = [±\Delta c_1, ±\Delta c_2, ..., ±\Delta c_9]^T `$
 
 The change in power measured by a filter `j`, `ΔPⱼ`, is a linear function of these coefficient changes:
 
-$` \Delta P_j = \sum_{i=1}^{9} K_{ji} \cdot \Delta c_i `$
+$` ±\Delta P_j = \sum_{i=1}^{9} K_{ji} \cdot ±\Delta c_i `$
 
 This can be written in matrix form:
 
@@ -173,8 +173,8 @@ $` \Delta\mathbf{P} = \mathbf{K} \cdot \Delta\mathbf{c} `$
 
 Where:
 *   **$`ΔP`$** is an `M × 1` vector of power changes for `M` filters.
-*   **$`Δc`$** is the `9 × 1` vector of coefficient changes we want to retrieve.
-*   **$`K`$** is the `M × 9` **Jacobian matrix** (or kernel matrix). Each element $`K_{ji}`$ represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
+*   **$`Δc`$** is the `18 × 1` vector of coefficient changes we want to retrieve.
+*   **$`K`$** is the `M × 18` **Jacobian matrix** (or kernel matrix). Each element $`K_{ji}`$ represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
 
     $` K_{ji} = \frac{\pi}{\Delta c_i} \int \Delta I_{i,±}(\lambda) \cdot T_{filter,j}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
 
@@ -185,7 +185,7 @@ We will use a **Sequential Forward Selection (SFS)** algorithm, a greedy approac
 #### **Step 9.1: Define the Candidate Filter Space**
 
 We cannot search a continuous space of all possible filters. Instead, we must discretize it.
-1.  **Central Wavelengths (`λ_c`):** Define a grid of possible central wavelengths. For example, from 4 µm to 20 µm in steps of 0.1 µm. This grid should cover all regions where you observed significant radiance changes in Step 7.
+1.  **Central Wavelengths (`λ_c`):** Define a grid of possible central wavelengths. For example, from 2.5 µm to 20 µm in steps of 0.1 µm. This grid should cover all regions where you observed significant radiance changes in Step 7.
 2.  **Bandwidths (`Δλ`):** For each central wavelength, define a few possible bandwidths (e.g., 0.2 µm, 0.5 µm, 1.0 µm). Assume a simple boxcar or Gaussian shape for the filter transmittance `T_filter(λ)`.
 
 This creates a finite library of several hundred or a few thousand "candidate filters."
@@ -195,18 +195,18 @@ This creates a finite library of several hundred or a few thousand "candidate fi
 The algorithm proceeds as follows:
 
 **Iteration 1: Select the Best First Filter**
-1.  For each candidate filter `j` in your library, construct the `1 × 9` Jacobian matrix **$`K_j`$**.
+1.  For each candidate filter `j` in your library, construct the `1 × 18` Jacobian matrix **$`K_j`$**.
 2.  Calculate a metric of its total sensitivity. A good metric is the squared Frobenius norm, which is the sum of squares of its elements: **$`||K_j||_F² = Σᵢ(K_{ji})²`$**.
 3.  Select the filter `j*` that **maximizes this norm**. This filter is the one most sensitive to the dominant modes of atmospheric variability. Add it to your `OptimizedSet`.
 
 **Iteration 2: Select the Best Second Filter**
-1.  Now, for every *remaining* candidate filter `k` in your library, temporarily add it to your `OptimizedSet`. This creates a `2 × 9` Jacobian matrix **$`K_{j*, k}`$**.
+1.  Now, for every *remaining* candidate filter `k` in your library, temporarily add it to your `OptimizedSet`. This creates a `2 × 18` Jacobian matrix **$`K_{j*, k}`$**.
 2.  Perform a Singular Value Decomposition (SVD) on this **$`K_{j*, k}`$** matrix and find its smallest singular value, $`σ_{min}`$.
 3.  Select the filter $`k*`$ that **maximizes $`σ_{min}`$**. This filter is the one that adds the most *new, independent* information to the system, making it easier to distinguish atmospheric modes that might have looked similar to the first filter. Add $`k*`$ to your `OptimizedSet`.
 
 **Iteration m: Select the Best m-th Filter**
 1.  With `m-1` filters already in `OptimizedSet`, iterate through all remaining candidate filters `l`.
-2.  For each, form the `m × 9` Jacobian matrix **$`K_m`$** and find its smallest singular value, $`σ_{min}`$.
+2.  For each, form the `m × 18` Jacobian matrix **$`K_m`$** and find its smallest singular value, $`σ_{min}`$.
 3.  Select the filter $`l*`$ that maximizes $`σ_{min}`$ and add it to `OptimizedSet`.
 
 #### **Step 9.3: Determine the Optimal Number of Filters (Stopping Criterion)**
