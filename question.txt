@@ -24,6 +24,36 @@ Refer to my README.md file. This is a Project Proposal: Redefining Atmospheric W
 Step5:
 Refer to my README.md file. This is a Project Proposal: Redefining Atmospheric Weighting Functions using Principal Component Analysis for Optimal Filter Selection. Read it carefully and focus on the Step 5: Generate Perturbed Profiles. Use python to realize this step and do not worry about other steps. The detailed Step 1 2, 3 and 4 running record are 'processing_inventory.log', 'Step2_PCA_inventory.log', 'Step3_Stats_inventory.log' and 'step4_processing_inventory.log'. All output files shall be saved to a new folder named without timestamp. Do not run the code with command-line parsing. Also, generate a detailed log record file to conclude what (annotate the detailed meanings of the output files) and where is the output files. output csv files of step 1 2, 3 and step 4 are all with column header and row index.
 
+Step6:
+Refer to my README.md file. This is a Project Proposal: Redefining Atmospheric Weighting Functions using Principal Component Analysis for Optimal Filter Selection. Read it carefully and focus on the Step 6: Generation of PCA-based Radiance Perturbation Spectra (Weighting Functions), use python to realize this step and do not worry about other steps.
+
+The data is in the root="C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\Data\DeltaC_TDp_change_forChenglong". There are 18 mat files with name pattern "Rad_DeltaC_TDp_index%d.mat", where '%d' represents the index of the mat files.
+
+Each mat file has 9 double variables:
+H 61x1 double (Height)
+P_atm 61x1 double (Pressure as the function of height)
+RH 61x1 double (Relative humidity as the function of height)
+T_DP 61x1 double (Dew point as the function of height)
+T_atm 61x1 double (Temperature as the function of height)
+lambda 3501x1 double (lambda from 2.5 um to 20um)
+rad_um 3501x1 double (downwelling spectral radiance in lambda domain)
+rad_wavenum 3501x1 double (downwelling spectral radiance in wavenumber domain)
+wavenum 3501x1 double (wavenumber in 2.5 um to 20um)
+
+and
+index1 is the result of +Δc1
+index2 is the result of +Δc2
+... ...
+index9 is the result of +Δc9
+index10 is the result of -Δc1
+index 11 is the result of -Δc2
+... ...
+index18 is the result of -Δc9
+
+And 1 mat with the name "Rad_NewModel66layers_TDpP4Aerosol_HKObservatory0-100-5000m_6-1-15km_280.mat". It is the representative sample. It has same variables structure as described above.
+
+T_atm and T_DP in one mat file have 61 elements, only the first 21 elements (the first 21 elements represent 2km sampled points) change among these mat files. All output files shall be saved to a new folder named without timestamp. Do not run the code with command-line parsing. Also, generate a detailed log record file to conclude what (annotate the detailed meanings of the output files) and where is the output files. output csv files of step 1 are all with column header and row index. you can also refer the step 5 python script and record log file to generate the step 6 python script.
+
 Debug:
 Refer to my README.md file. This is a Project Proposal: Redefining Atmospheric Weighting Functions using Principal Component Analysis for Optimal Filter Selection. Read it carefully and focus on the Step 3: Statistical Analysis of PCA Coefficients. We have already used python script "step3_stats_c.py" to realize this step and do not focus on other steps. The detailed Step 3 running record is 'Step3_Stats_inventory.log'. I would like to know:
 1. What established rule has been used in the step3_stats_c.py?
