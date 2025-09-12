@@ -1,0 +1,79 @@
+Ground-based Atmospheric Profiles — Step 6: PCA-based Radiance Perturbation Spectra (Weighting Functions)
+
+Inputs used:
+  - Data root: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\Data\DeltaC_TDp_change_forChenglong
+  - Representative .mat: C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\Data\DeltaC_TDp_change_forChenglong\Rad_NewModel66layers_TDpP4Aerosol_HKObservatory0-100-5000m_6-1-15km_280.mat
+  - Perturbation .mat files: Rad_DeltaC_TDp_index1.mat ... Rad_DeltaC_TDp_index18.mat
+
+Core relation (retain sign):
+  - ΔI_i,±(λ) = I_pert,i,±(λ) − I_ref(λ)
+    where:
+      λ: wavelength (μm)
+      I(λ): downwelling spectral radiance in wavelength domain [W/(m² · sr · μm)]
+      i ∈ {1..9}, ± denotes +Δc_i and −Δc_i
+
+Outputs saved in this step (all CSVs include headers and a row index named 'lambda_um'):
+  - DeltaI_weighting_functions_all.csv: Step6_PCA_WeightingFunctions\DeltaI_weighting_functions_all.csv
+    Meaning: Combined table of ΔI(λ) for all 18 perturbations; columns are 'PCx_plus/minus'.
+  - per_PC/PC1_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC1_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC2_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC2_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC3_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC3_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC4_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC4_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC5_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC5_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC6_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC6_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC7_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC7_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC8_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC8_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC9_plus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC9_plus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC1_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC1_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC2_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC2_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC3_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC3_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC4_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC4_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC5_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC5_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC6_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC6_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC7_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC7_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC8_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC8_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+  - per_PC/PC9_minus_weighting_function.csv: Step6_PCA_WeightingFunctions\per_PC\PC9_minus_weighting_function.csv
+    Meaning: Single-perturbation ΔI(λ) series for the indicated PC and sign.
+
+Figures (per perturbation):
+  - Step6_PCA_WeightingFunctions\plots\PC1_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC1_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC2_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC2_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC3_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC3_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC4_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC4_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC5_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC5_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC6_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC6_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC7_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC7_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC8_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC8_minus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC9_plus_DeltaI_plot.png
+  - Step6_PCA_WeightingFunctions\plots\PC9_minus_DeltaI_plot.png
+  Each figure shows ΔI(λ) vs λ for one perturbation (PC i, +Δc_i or −Δc_i).
+
+Notes:
+  - The sign of ΔI is preserved (do not take absolute value).
+  - No detector system effects (filters, ZnSe, LiTaO3 emission, response, gain, or NEP) are included.
+  - All outputs are written without timestamps for reproducibility.
