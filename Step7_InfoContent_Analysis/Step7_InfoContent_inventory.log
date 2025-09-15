@@ -1,0 +1,51 @@
+Ground-based Atmospheric Profiles — Step 7: Information Content Analysis for Optimal Filter Placement
+
+Inputs used:
+  - Step 6 combined CSV (ΔI): C:\Users\24573\OneDrive - The University of Hong Kong\PhD\Project\atmospheric sounding\prior-analysis\Step6_PCA_WeightingFunctions\DeltaI_weighting_functions_all.csv
+  - Note: ΔI(λ) units are W/(m² · sr · μm); sign is preserved from Step 6.
+
+Core definitions (retain sign):
+  - Per-PC signed sensitivity: W_i(λ) = 0.5 · (ΔI_i,plus(λ) − ΔI_i,minus(λ)), i ∈ {1..9}.
+  - Sensitivity curves: 
+      S_rms(λ) = sqrt( mean_k( f_k(λ)^2 ) ), S_max(λ) = max_k(|f_k(λ)|).
+    We provide both across 18 ΔI(λ) and across 9 W_i(λ).
+  - Sliding window (width Δλ, stride): For each window [λ_c − Δλ/2, λ_c + Δλ/2],
+      V_i = ∫ W_i(λ) dλ  (trapezoid), E = ||V||_2,
+      Dominance Index DI = max_i |V_i| / Σ_i |V_i|,
+      Opposition Fraction = fraction of PCs opposing the dominant sign with significant magnitude (≥1% of dominant).
+  - Window settings: width Δλ = 0.500 μm, stride = 0.100 μm.
+
+Outputs (all CSVs include headers; λ-indexed files use 'lambda_um'):
+  - S_curves_18.csv: Step7_InfoContent_Analysis\S_curves_18.csv
+    Meaning: λ-indexed S_rms and S_max computed across the 18 ΔI(λ) spectra.
+  - S_curves_9.csv: Step7_InfoContent_Analysis\S_curves_9.csv
+    Meaning: λ-indexed S_rms and S_max computed across the 9 per-PC signed sensitivities W_i(λ).
+  - PC_signed_sensitivity.csv: Step7_InfoContent_Analysis\PC_signed_sensitivity.csv
+    Meaning: λ-indexed table of W_i(λ) = 0.5·(ΔI_plus − ΔI_minus) for i=1..9; sign retained.
+  - window_metrics.csv: Step7_InfoContent_Analysis\window_metrics.csv
+    Meaning: Sliding-window metrics. Columns include window bounds, number of points,
+             E_L2 (overall energy), dominant_pc, dominant_sign, dominance_index,
+             opposition_fraction, and integrated components V_PC1..V_PC9.
+  - top_windows_by_energy.csv: Step7_InfoContent_Analysis\top_windows_by_energy.csv
+    Meaning: Top-N windows ranked by E_L2 with non-overlap enforced; candidates for high-signal filter placement.
+  - top_windows_per_pc.csv: Step7_InfoContent_Analysis\top_windows_per_pc.csv
+    Meaning: For each PC, the most dominant high-energy window (if available); candidates to uniquely sense each PC.
+  - PC_pairwise_correlation.csv: Step7_InfoContent_Analysis\PC_pairwise_correlation.csv
+    Meaning: 9×9 Pearson correlation among W_i(λ) over the full band; lower |r| suggests better separability.
+
+Figures:
+  - Step7_InfoContent_Analysis\plots\overlay_all_18_DeltaI.png
+  - Step7_InfoContent_Analysis\plots\overlay_9_PC_signed_sensitivities.png
+  - Step7_InfoContent_Analysis\plots\sensitivity_curves_Srms_Smax.png
+  - Step7_InfoContent_Analysis\plots\pairwise_PC_correlation_heatmap.png
+  - Step7_InfoContent_Analysis\plots\overlay_Wi_with_top_energy_windows.png
+  Meanings:
+    - overlay_all_18_DeltaI.png: All 18 ΔI(λ) overlaid (visual map of sensitivity).
+    - overlay_9_PC_signed_sensitivities.png: 9 derived per-PC signed sensitivities W_i(λ).
+    - sensitivity_curves_Srms_Smax.png: S_rms and S_max vs λ (18 ΔI and 9 W_i).
+    - pairwise_PC_correlation_heatmap.png: Inter-PC correlation (full-band).
+    - overlay_Wi_with_top_energy_windows.png: W_i(λ) overlaid with top energy windows shaded (candidate bands).
+
+Notes:
+  - No detector system effects (filters, ZnSe, LiTaO3 emission, response, gain, or NEP) are included in Step 7.
+  - Outputs are written without timestamps for reproducibility.
