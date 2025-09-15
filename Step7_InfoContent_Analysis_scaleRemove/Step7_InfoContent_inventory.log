@@ -13,25 +13,15 @@ Core relations:
              whose sign opposes the dominant sign.
   - Window settings: width Δλ = 0.500 μm, stride = 0.100 μm.
 
-Selection rules implemented:
-  - Top-25 by energy (U-based): non-overlapping windows by descending E_L2.
-  - Top-5 per PC (U-based): for each PC i, score_i = E_L2 × DI_i with DI_i = |V_i|/Σ|V_j|;
-    select 5 highest-scoring windows (no dominance requirement).
-
 Outputs (all CSVs include headers; λ-indexed tables use 'lambda_um'):
   - PC_W_halfdiff_sensitivity.csv: Step7_InfoContent_Analysis\PC_W_halfdiff_sensitivity.csv
   - PC_U_unit_sensitivity.csv: Step7_InfoContent_Analysis\PC_U_unit_sensitivity.csv
-    Meaning: λ-indexed per-PC unit-coefficient sensitivities U_i(λ) = W_i(λ)/Δc_i.
   - S_curves_W.csv: Step7_InfoContent_Analysis\S_curves_W.csv
   - S_curves_U.csv: Step7_InfoContent_Analysis\S_curves_U.csv
-    Meaning: λ-indexed S_rms and S_max across U_i(λ).
   - window_metrics_W.csv: Step7_InfoContent_Analysis\window_metrics_W.csv
   - window_metrics_U.csv: Step7_InfoContent_Analysis\window_metrics_U.csv
-    Meaning: Sliding-window metrics on U_i, includes V_PC1..V_PC9 and sum_absV for per-PC scoring.
   - top_windows_by_energy_U.csv: Step7_InfoContent_Analysis\top_windows_by_energy_U.csv
-    Meaning: Top-25 non-overlapping windows by E_L2 (U-based); candidate high-signal bands.
   - top_windows_per_pc_U.csv: Step7_InfoContent_Analysis\top_windows_per_pc_U.csv
-    Meaning: For each PC, Top-5 windows by score_i = E_L2 × (|V_i|/Σ|V_j|); no dominance constraint.
   - PC_pairwise_correlation_W.csv: Step7_InfoContent_Analysis\PC_pairwise_correlation_W.csv
   - PC_pairwise_correlation_U.csv: Step7_InfoContent_Analysis\PC_pairwise_correlation_U.csv
 
@@ -39,16 +29,9 @@ Figures:
   - Step7_InfoContent_Analysis\plots\overlay_PC_W.png
   - Step7_InfoContent_Analysis\plots\overlay_PC_U.png
   - Step7_InfoContent_Analysis\plots\sensitivity_curves_W_vs_U.png
-  - Step7_InfoContent_Analysis\plots\overlay_U_with_top_windows_energy.png
-  - Step7_InfoContent_Analysis\plots\overlay_U_with_top_windows_energy_and_perPC.png
-  Meanings:
-    - overlay_PC_W.png: Per-PC W_i(λ) = 0.5·(ΔI_plus − ΔI_minus).
-    - overlay_PC_U.png: Per-PC U_i(λ) = W_i(λ)/Δc_i (unit-coefficient).
-    - sensitivity_curves_W_vs_U.png: S_rms, S_max vs λ for W and U.
-    - overlay_U_with_top_windows_energy.png: U_i(λ) with Top-25 E_L2 windows shaded (gold).
-    - overlay_U_with_top_windows_energy_and_perPC.png: U_i(λ) with Top-25 energy (gold) and Top-5 per PC (colored) shaded.
+  - Step7_InfoContent_Analysis\plots\overlay_U_with_top_windows.png
 
 Notes:
-  - Δc normalization removes artificial dominance by PC1 due to larger bin width.
+  - Ranking and Top-N selections are based on U_i (Δc-normalized) by default to remove bin-width bias.
+  - W-based outputs are provided for reference.
   - No detector system effects are included in Step 7.
-  - Outputs are written without timestamps for reproducibility.
