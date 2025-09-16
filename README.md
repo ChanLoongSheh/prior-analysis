@@ -151,18 +151,18 @@ The combined results from these two selection strategies, visualized in the `ove
 
 The forward model links the change in the atmospheric state, represented by the vector of PCA coefficient changes `Δc`, to the resulting change in measured power at the detector, `ΔP`.
 
-`Δ**P** = **K** ⋅ Δ**c**`
+**`ΔP = K ⋅ Δc`**
 
 Where:
-*   `Δ**P**` is the `M × 1` vector of power changes for `M` filters.
-*   `Δ**c**` is the `9 × 1` vector of coefficient changes we aim to retrieve.
-*   `**K**` is the `M × 9` **Jacobian matrix**. Each element `Kⱼᵢ` represents the sensitivity of filter `j` to a unit change in coefficient `cᵢ`.
+*   **`ΔP`** is the `M × 1` vector of power changes for `M` filters.
+*   **`Δc`** is the `9 × 1` vector of coefficient changes we aim to retrieve.
+*   **`K`** is the `M × 9` **Jacobian matrix**. Each element `Kⱼᵢ` represents the sensitivity of filter `j` to a unit change in coefficient `cᵢ`.
 
 Crucially, we will construct the Jacobian using our normalized weighting functions, `Uᵢ(λ)`, as they represent the true, unbiased physical sensitivity:
 
 `Kⱼᵢ = π ∫ Uᵢ(λ) ⋅ T_filter,j(λ) ⋅ T_ZnSe(λ) ⋅ A_LiTaO₃(λ) dλ`
 
-The quality of our filter set is determined by the mathematical properties of the Jacobian matrix `**K**`. A well-conditioned `**K**` ensures that small errors in the power measurement `Δ**P**` do not lead to large errors in the retrieved `Δ**c**`. We quantify this by the **smallest singular value** of `**K**`, denoted `σ_min`. Our optimization goal is to **maximize `σ_min`**.
+The quality of our filter set is determined by the mathematical properties of the Jacobian matrix **`K`**. A well-conditioned **`K`** ensures that small errors in the power measurement **`ΔP`** do not lead to large errors in the retrieved **`Δc`**. We quantify this by the **smallest singular value** of **`K`**, denoted `σ_min`. Our optimization goal is to **maximize `σ_min`**.
 
 We will employ a **Sequential Forward Selection (SFS)** algorithm to build the optimal filter set, exploring two different search strategies for defining the candidate filter space.
 
@@ -184,14 +184,14 @@ We must discretize the infinite space of possible filters into a finite library.
 The SFS algorithm iteratively builds the `OptimizedSet` of filters:
 
 **Iteration 1: Select the Best First Filter**
-1.  For each candidate filter `j` in the library, construct its `1 × 9` Jacobian row vector `**K**_j`.
-2.  Calculate its total sensitivity, given by the squared Frobenius norm: `||**K**_j||_F² = Σᵢ(K_jᵢ)²`.
+1.  For each candidate filter `j` in the library, construct its `1 × 9` Jacobian row vector **$`K_j`$**.
+2.  Calculate its total sensitivity, given by the squared Frobenius norm: **$`||K_j||_F² = Σᵢ(K_jᵢ)²`$**.
 3.  Select the filter `j*` that **maximizes this norm**. This filter is the most sensitive to the combined atmospheric variability. Add it to `OptimizedSet`.
 
 **Iteration m: Select the Best m-th Filter**
 1.  With `m-1` filters already in `OptimizedSet`, iterate through all *remaining* candidate filters `l`.
-2.  For each `l`, form the temporary `m × 9` Jacobian matrix `**K**_m` by appending its row vector to the Jacobian of the current `OptimizedSet`.
-3.  Perform a Singular Value Decomposition (SVD) on `**K**_m` and find its smallest singular value, `σ_min`.
+2.  For each `l`, form the temporary `m × 9` Jacobian matrix **`K_m`** by appending its row vector to the Jacobian of the current `OptimizedSet`.
+3.  Perform a Singular Value Decomposition (SVD) on **`K_m`** and find its smallest singular value, `σ_min`.
 4.  Select the filter `l*` that **maximizes `σ_min`** and permanently add it to `OptimizedSet`. This filter is the one that adds the most new, independent information, making the atmospheric modes maximally distinguishable.
 
 #### **Step 8.3: Determine the Optimal Number of Filters (Stopping Criterion)**
