@@ -114,107 +114,90 @@ The primary deliverable of this step will be 18 plots, each showing `ΔI(λ)` vs
 
 ---
 
-### **Step 7: Information Content Analysis for Optimal Filter Placement**
+### **Step 7: Information Content Analysis with Δc-Normalized Weighting Functions**
 
-**Objective:** To identify the most informative spectral regions for atmospheric sounding by analyzing the set of new weighting functions.
+**Objective:** To identify the most informative spectral regions for atmospheric sounding by analyzing a set of physically normalized, PCA-based weighting functions.
 
-**Description:** Not all wavelengths are created equal. Some are highly sensitive to atmospheric changes, while others are not. We will identify the "action regions" by examining our 18 `ΔI(λ)` spectra.
+**Description:** The raw radiance difference spectra, `ΔI(λ)`, while useful, have a magnitude that depends on the chosen coefficient perturbation, `Δcᵢ`. A larger `Δcᵢ` for one PC will artificially inflate its corresponding `ΔI(λ)` relative to others. To remove this bias and analyze the pure sensitivity of radiance to atmospheric changes, we introduce a normalized weighting function.
 
-The methodology is as follows:
-1.  **Overlay the Weighting Functions:** Plot all 18 $`ΔI_{i, \pm}(\lambda)`$ spectra on a single graph. This will create a visual map of atmospheric sensitivity.
-2.  **Identify High-Signal Regions:** Look for spectral bands where the `ΔI` values (both positive and negative) have the largest magnitudes. These are the wavelengths where the principal modes of atmospheric variability produce the strongest radiance changes. These are prime candidates for filter placement.
-3.  **Identify Regions of Orthogonality:** Look for bands where the spectral signatures of different PCs are distinct. For example, a region where `ΔI₁` is strongly positive while `ΔI₂` is strongly negative is extremely valuable, as a filter placed there can help differentiate between these two atmospheric modes.
+First, we define the half-difference sensitivity, `Wᵢ(λ)`, which represents the core radiance change signal:
 
-This qualitative analysis will guide our initial filter selection, pointing us toward the spectral windows that contain the most information about the atmospheric state as defined by our PCA basis.
+`Wᵢ(λ) = 0.5 · (ΔIᵢ,plus(λ) − ΔIᵢ,minus(λ)) ≈ Δcᵢ · ∂I(λ)/∂cᵢ`
 
----
+Next, we normalize `Wᵢ(λ)` by its corresponding perturbation `Δcᵢ` to obtain the **unit-coefficient sensitivity**, `Uᵢ(λ)`. This crucial quantity represents the change in radiance per unit change in the `i`-th principal component coefficient and serves as our true, physically comparable weighting function.
 
-### **Step 8: Quantifying Detectable Signals for a Realistic Instrument**
+`Uᵢ(λ) = Wᵢ(λ) / Δcᵢ ≈ ∂I(λ)/∂cᵢ`
 
-**Objective:** To connect the theoretical radiance changes to the practical capabilities of your detector system and determine if the signals are strong enough to be reliably measured.
+With the set of nine `Uᵢ(λ)` spectra, we can now objectively identify the most valuable spectral "action regions." This is accomplished through a quantitative sliding-window analysis:
 
-**Description:** A large radiance change is useless if it's smaller than your instrument's noise floor. In this step, we will calculate the actual change in power that your detector would register for each perturbation and compare it to the detector's noise level.
+1.  **Sliding Window Integration:** We slide a window of width **Δλ = 0.500 μm** across the spectrum with a stride of **0.100 μm**. Within each window, we integrate each `Uᵢ(λ)` to get a vector of integrated sensitivities, `V`.
+    `Vᵢ = ∫ Uᵢ(λ) dλ`
 
-For a given hypothetical optical filter with transmittance `T_filter(λ)`, the change in detected power `ΔP` for a given perturbation is calculated by integrating the radiance change through your complete detector system.
+2.  **Window Metrics:** For each window, we compute metrics to quantify its information content, including the L2-norm of the sensitivity vector, `E_L2 = ||V||₂`, which represents the total signal energy in that window.
 
-$` \Delta P_{i, \pm} = \pi \cdot \int \Delta I_{i, \pm}(\lambda) \cdot T_{filter}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
+3.  **Selection of Optimal Windows:** We apply two distinct, complementary selection rules to build a portfolio of candidate spectral bands:
+    *   **Top-25 by Energy:** We select the top 25 non-overlapping windows with the highest `E_L2` score. These windows represent spectral regions with the highest overall sensitivity to the principal modes of atmospheric variation. Our analysis shows these windows are primarily concentrated in the **~6.5 μm to 13.1 μm** range.
+    *   **Top-5 per PC:** For each of the nine PCs, we identify the five windows that are best at isolating that specific PC's signal. This is done by maximizing a per-PC score, `scoreᵢ = E_L2 × (|Vᵢ|/Σ|Vⱼ|)`. This technique is powerful because it finds important regions even if the target PC is not the single dominant one in that window. This analysis also highlights windows primarily within the **~6.5 μm to 12.5 μm** range.
 
-Where:
-*   $`\Delta P_{i, \pm}`$ is the change in absorbed power (in Watts) at the detector for the perturbation `i,±`.
-*   The factor of `π` is included to convert from spectral radiance (W/m²·sr·µm) to spectral irradiance (W/m²·µm) assuming isotropic downwelling radiance.
-*   $`T_{ZnSe}(\lambda)`$ is the transmittance of the Zinc Selenide window.
-*   $`A_{LiTaO_3}(\lambda)`$ is the spectral absorptivity of the Lithium Tantalate detector material.
-
-We then compare this signal to the detector's noise. The noise equivalent power (NEP) is given as 22.6 nW/√Hz. The total noise power `P_noise` depends on the measurement bandwidth `B` (in Hz), which is inversely related to the integration time `τ` (i.e., `B ≈ 1/τ`).
-
-$` P_{noise} = NEP \cdot \sqrt{B} `$
-
-A signal `ΔP` is considered detectable if its magnitude is significantly greater than `P_noise`. This analysis allows us to refine the filter locations identified in Step 7 by ensuring that the resulting power changes are measurable by your actual hardware.
+The combined results from these two selection strategies, visualized in the `overlay_U_with_top_windows_energy_and_perPC.png` plot, provide a robust, data-driven map of the most information-rich spectral bands. The strong consensus on the **~5.5 μm to 13.5 μm** region provides an excellent foundation for the subsequent filter optimization search.
 
 ---
 
-### **Step 9 : Objective Filter Set Optimization via Sequential Forward Selection**
+### **Step 8: Objective Filter Set Optimization via Sequential Forward Selection**
 
-**Objective:** To algorithmically determine the optimal number, central wavelengths, and bandwidths of the filters by maximizing the information content and minimizing the retrieval error of the atmospheric state.
+**Objective:** To algorithmically determine the optimal set of filters (number, central wavelengths, and bandwidths) by maximizing the distinguishability of the atmospheric principal components in the measurement space.
 
-**Description:** The core idea is to treat the filter selection as a formal optimization problem. We want to select a set of filters that makes the different principal modes of the atmosphere as distinguishable as possible in the measurement space (i.e., the space of detector power readings).
+**Description:** This step formalizes the filter selection process into a well-posed optimization problem. The goal is to select a set of filters that yields a measurement system capable of resolving the atmospheric state vector `Δc` with minimal error amplification.
 
-First, let's formalize our forward model. The change in the atmospheric state can be described by the vector of PCA coefficient changes, `±Δc`.
+The forward model links the change in the atmospheric state, represented by the vector of PCA coefficient changes `Δc`, to the resulting change in measured power at the detector, `ΔP`.
 
-$` \Delta\mathbf{c} = [±\Delta c_1, ±\Delta c_2, ..., ±\Delta c_9]^T `$
-
-The change in power measured by a filter `j`, `ΔPⱼ`, is a linear function of these coefficient changes:
-
-$` ±\Delta P_j = \sum_{i=1}^{9} K_{ji} \cdot ±\Delta c_i `$
-
-This can be written in matrix form:
-
-$` \Delta\mathbf{P} = \mathbf{K} \cdot \Delta\mathbf{c} `$
+`Δ**P** = **K** ⋅ Δ**c**`
 
 Where:
-*   **$`ΔP`$** is an `M × 1` vector of power changes for `M` filters.
-*   **$`Δc`$** is the `18 × 1` vector of coefficient changes we want to retrieve.
-*   **$`K`$** is the `M × 18` **Jacobian matrix** (or kernel matrix). Each element $`K_{ji}`$ represents the sensitivity of filter `j` to a change in coefficient `cᵢ`. It is calculated from our previously derived weighting functions:
+*   `Δ**P**` is the `M × 1` vector of power changes for `M` filters.
+*   `Δ**c**` is the `9 × 1` vector of coefficient changes we aim to retrieve.
+*   `**K**` is the `M × 9` **Jacobian matrix**. Each element `Kⱼᵢ` represents the sensitivity of filter `j` to a unit change in coefficient `cᵢ`.
 
-    $` K_{ji} = \frac{\pi}{\Delta c_i} \int \Delta I_{i,±}(\lambda) \cdot T_{filter,j}(\lambda) \cdot T_{ZnSe}(\lambda) \cdot A_{LiTaO_3}(\lambda) \,d\lambda `$
+Crucially, we will construct the Jacobian using our normalized weighting functions, `Uᵢ(λ)`, as they represent the true, unbiased physical sensitivity:
 
-The goal of the inverse problem is to find **$`Δc`$** given a measurement of **$`ΔP`$**. A good filter set will produce a Jacobian matrix **$`K`$** that is well-conditioned, meaning the inversion is stable and does not amplify measurement noise. The "goodness" of **$`K`$** can be quantified objectively. A powerful metric is the **smallest singular value** of **$`K`$**, denoted $`σ_{min}`$. Maximizing $`σ_{min}`$ is equivalent to minimizing the worst-case error amplification.
+`Kⱼᵢ = π ∫ Uᵢ(λ) ⋅ T_filter,j(λ) ⋅ T_ZnSe(λ) ⋅ A_LiTaO₃(λ) dλ`
 
-We will use a **Sequential Forward Selection (SFS)** algorithm, a greedy approach that builds the optimal filter set one filter at a time.
+The quality of our filter set is determined by the mathematical properties of the Jacobian matrix `**K**`. A well-conditioned `**K**` ensures that small errors in the power measurement `Δ**P**` do not lead to large errors in the retrieved `Δ**c**`. We quantify this by the **smallest singular value** of `**K**`, denoted `σ_min`. Our optimization goal is to **maximize `σ_min`**.
 
-#### **Step 9.1: Define the Candidate Filter Space**
+We will employ a **Sequential Forward Selection (SFS)** algorithm to build the optimal filter set, exploring two different search strategies for defining the candidate filter space.
 
-We cannot search a continuous space of all possible filters. Instead, we must discretize it.
-1.  **Central Wavelengths (`λ_c`):** Define a grid of possible central wavelengths. For example, from 2.5 µm to 20 µm in steps of 0.1 µm. This grid should cover all regions where you observed significant radiance changes in Step 7.
-2.  **Bandwidths (`Δλ`):** For each central wavelength, define a few possible bandwidths (e.g., 0.2 µm, 0.5 µm, 1.0 µm). Assume a simple boxcar or Gaussian shape for the filter transmittance `T_filter(λ)`.
+#### **Step 8.1: Define Candidate Filter Space**
 
-This creates a finite library of several hundred or a few thousand "candidate filters."
+We must discretize the infinite space of possible filters into a finite library.
 
-#### **Step 9.2: The Greedy Selection Algorithm**
+*   **Strategy A: Local, Data-Driven Search**
+    *   **Central Wavelengths (`λ_c`):** Based on the robust results from Step 7, we define a fine grid of possible central wavelengths from **5.5 μm to 13.5 μm** in steps of **0.05 μm**. This region was empirically shown to contain the vast majority of useful information.
+    *   **Bandwidths (`Δλ`):** For each `λ_c`, we will test a set of three representative bandwidths: **0.2 μm, 0.5 μm, and 1.0 μm**.
 
-The algorithm proceeds as follows:
+*   **Strategy B: Global Search**
+    *   **Central Wavelengths (`λ_c`):** We define a coarser grid across the instrument's full operational range, from **2.5 μm to 20.0 μm** in steps of **0.1 μm**.
+    *   **Bandwidths (`Δλ`):** We use the same set of candidate bandwidths (0.2 μm, 0.5 μm, 1.0 μm).
+    *   **Purpose:** This global search serves as a vital baseline. If its results converge on the same spectral regions identified in Strategy A, it provides powerful validation for our entire PCA-based information content analysis.
+
+#### **Step 8.2: The Greedy Selection Algorithm**
+
+The SFS algorithm iteratively builds the `OptimizedSet` of filters:
 
 **Iteration 1: Select the Best First Filter**
-1.  For each candidate filter `j` in your library, construct the `1 × 18` Jacobian matrix **$`K_j`$**.
-2.  Calculate a metric of its total sensitivity. A good metric is the squared Frobenius norm, which is the sum of squares of its elements: **$`||K_j||_F² = Σᵢ(K_{ji})²`$**.
-3.  Select the filter `j*` that **maximizes this norm**. This filter is the one most sensitive to the dominant modes of atmospheric variability. Add it to your `OptimizedSet`.
-
-**Iteration 2: Select the Best Second Filter**
-1.  Now, for every *remaining* candidate filter `k` in your library, temporarily add it to your `OptimizedSet`. This creates a `2 × 18` Jacobian matrix **$`K_{j*, k}`$**.
-2.  Perform a Singular Value Decomposition (SVD) on this **$`K_{j*, k}`$** matrix and find its smallest singular value, $`σ_{min}`$.
-3.  Select the filter $`k*`$ that **maximizes $`σ_{min}`$**. This filter is the one that adds the most *new, independent* information to the system, making it easier to distinguish atmospheric modes that might have looked similar to the first filter. Add $`k*`$ to your `OptimizedSet`.
+1.  For each candidate filter `j` in the library, construct its `1 × 9` Jacobian row vector `**K**_j`.
+2.  Calculate its total sensitivity, given by the squared Frobenius norm: `||**K**_j||_F² = Σᵢ(K_jᵢ)²`.
+3.  Select the filter `j*` that **maximizes this norm**. This filter is the most sensitive to the combined atmospheric variability. Add it to `OptimizedSet`.
 
 **Iteration m: Select the Best m-th Filter**
-1.  With `m-1` filters already in `OptimizedSet`, iterate through all remaining candidate filters `l`.
-2.  For each, form the `m × 18` Jacobian matrix **$`K_m`$** and find its smallest singular value, $`σ_{min}`$.
-3.  Select the filter $`l*`$ that maximizes $`σ_{min}`$ and add it to `OptimizedSet`.
+1.  With `m-1` filters already in `OptimizedSet`, iterate through all *remaining* candidate filters `l`.
+2.  For each `l`, form the temporary `m × 9` Jacobian matrix `**K**_m` by appending its row vector to the Jacobian of the current `OptimizedSet`.
+3.  Perform a Singular Value Decomposition (SVD) on `**K**_m` and find its smallest singular value, `σ_min`.
+4.  Select the filter `l*` that **maximizes `σ_min`** and permanently add it to `OptimizedSet`. This filter is the one that adds the most new, independent information, making the atmospheric modes maximally distinguishable.
 
-#### **Step 9.3: Determine the Optimal Number of Filters (Stopping Criterion)**
+#### **Step 8.3: Determine the Optimal Number of Filters (Stopping Criterion)**
 
-Continue the iterative process. With each new filter added, plot the value of the maximized $`σ_{min}`$ versus the number of filters (`m`). You will typically see a curve that rises sharply at first and then begins to flatten out.
+We continue the iterative selection process, plotting the maximized `σ_min` at each step versus the number of filters (`m`). The process stops when:
+*   We reach the "knee" of the curve, where adding more filters yields diminishing returns in `σ_min`. This indicates we have captured the bulk of the available information.
+*   We have selected at least `M=9` filters, the theoretical minimum required to solve for `k=9` unknown coefficients. Extending to `M=11` or `M=12` can add valuable redundancy and robustness against noise.
 
-You can stop when:
-*   You reach the "knee" of the curve, where adding another filter provides only a marginal improvement in $`σ_{min}`$. This indicates you have captured most of the available information.
-*   You have at least `M=9` filters, which is the theoretical minimum to resolve `k=9` unknown coefficients. Continuing to `M=11` or `M=12` can add robustness and redundancy.
-
-The final `OptimizedSet` contains the central wavelengths and bandwidths of your objectively determined optimal filter set.
+The final `OptimizedSet` will contain the central wavelengths and bandwidths for the objectively determined optimal filter configuration, with results from both the local and global search strategies for comparison.
